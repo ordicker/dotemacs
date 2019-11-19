@@ -48,6 +48,20 @@ Bootstrap use-package
   (setq dashboard-banner-logo-title "Welcome to Dicker's Emacs")
   (setq dashboard-set-navigator t))
 #+END_SRC
+* Super-save
+#+BEGIN_SRC emacs-lisp
+(use-package super-save
+  :ensure t
+  :config
+  (super-save-mode +1))
+#+END_SRC
+* EditorConfig
+#+BEGIN_SRC emacs-lisp
+(use-package editorconfig
+  :ensure t
+  :config
+  (editorconfig-mode 1))
+#+END_SRC
 * Magit
 #+BEGIN_SRC emacs-lisp 
 (use-package magit
@@ -273,6 +287,10 @@ Bootstrap use-package
 #+END_SRC
 * Shell 
 * Latex
+#+BEGIN_SRC emacs-lisp
+(use-package tex
+    :ensure auctex)
+#+END_SRC
 * Julia
 #+BEGIN_SRC emacs-lisp
 (use-package julia-mode
