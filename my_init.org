@@ -55,6 +55,14 @@ Bootstrap use-package
   :config
   (super-save-mode +1))
 #+END_SRC
+* Beacon
+#+BEGIN_SRC emacs-lisp
+(use-package beacon
+  :ensure t
+  :config
+  (beacon-mode 1)
+)
+#+END_SRC
 * EditorConfig
 #+BEGIN_SRC emacs-lisp
 (use-package editorconfig
