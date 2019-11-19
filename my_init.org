@@ -60,6 +60,15 @@ Bootstrap use-package
   (exec-path-from-shell-copy-env "SSH_AGENT_PID")
   (exec-path-from-shell-copy-env "SSH_AUTH_SOCK"))
 #+END_SRC
+* Org-mode stuff
+#+BEGIN_SRC emacs-lisp
+(use-package org-bullets
+    :ensure t
+    :config
+    (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+
+(use-package htmlize :ensure t)
+#+END_SRC
 * Projectile
 #+BEGIN_SRC emacs-lisp 
 (use-package projectile
@@ -67,29 +76,17 @@ Bootstrap use-package
   :init
   (setq projectile-completion-system 'ivy)
   :config
-  (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
+  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
   (projectile-mode +1))
 #+END_SRC
 * Swiper/Ivy/Counsel
 #+BEGIN_SRC emacs-lisp 
-;;(use-package ivy
-;;  :diminish ivy-mode
-;;  :config
-;;  (ivy-mode 1)
-;;  (setq ivy-use-virtual-buffers t)
-;;  (define-key ivy-minibuffer-map [remap keyboard-quit] 'minibuffer-keyboard-quit)
-;;  (setq ivy-count-format "")
-;;  (setq ivy-initial-inputs-alist nil))
-
    (use-package counsel
 :ensure t
   :bind
   (("M-y" . counsel-yank-pop)
    :map ivy-minibuffer-map
    ("M-y" . ivy-next-line)))
-
-
-
 
   (use-package ivy
   :ensure t
@@ -100,7 +97,6 @@ Bootstrap use-package
   (setq ivy-use-virtual-buffers t)
   (setq ivy-count-format "%d/%d ")
   (setq ivy-display-style 'fancy))
-
 
   (use-package swiper
   :ensure t
@@ -117,6 +113,44 @@ Bootstrap use-package
     (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
     ))
 #+END_SRC
+* IBUFFER
+ #+BEGIN_SRC emacs-lisp
+ (global-set-key (kbd "C-x C-b") 'ibuffer)
+(setq ibuffer-saved-filter-groups
+      (quote (("default"
+               ("dired" (mode . dired-mode))
+               ("org" (name . "^.*org$"))
+               ("magit" (mode . magit-mode))
+               ("IRC" (or (mode . circe-channel-mode) (mode . circe-server-mode)))
+               ("web" (or (mode . web-mode) (mode . js2-mode)))
+               ("shell" (or (mode . eshell-mode) (mode . shell-mode)))
+               ("mu4e" (or
+
+                        (mode . mu4e-compose-mode)
+                        (name . "\*mu4e\*")
+                        ))
+               ("programming" (or
+                               (mode . clojure-mode)
+                               (mode . clojurescript-mode)
+                               (mode . python-mode)
+                               (mode . c++-mode)))
+               ("emacs" (or
+                         (name . "^\\*scratch\\*$")
+                         (name . "^\\*Messages\\*$")))
+               ))))
+(add-hook 'ibuffer-mode-hook
+          (lambda ()
+            (ibuffer-auto-mode 1)
+            (ibuffer-switch-to-saved-filter-groups "default")))
+
+;; don't show these
+                                        ;(add-to-list 'ibuffer-never-show-predicates "zowie")
+;; Don't show filter groups if there are no buffers in that group
+(setq ibuffer-show-empty-filter-groups nil)
+
+;; Don't ask for confirmation to delete marked buffers
+(setq ibuffer-expert t)
+ #+END_SRC
 * Flycheck
 #+BEGIN_SRC emacs-lis
 (use-package flycheck
@@ -192,22 +226,34 @@ Bootstrap use-package
   (defadvice lsp-ui-imenu (after hide-lsp-ui-imenu-mode-line activate)
     (setq mode-line-format nil)))
 #+END_SRC
+* Parens
+#+BEGIN_SRC emacs-lisp
+(use-package smartparens
+:ensure t
+  :hook (prog-mode . smartparens-mode)
+  :custom
+  (sp-escape-quotes-after-insert nil)
+  :config
+  (require 'smartparens-config))
+
+(show-paren-mode t)
+#+END_SRC
 * Compeny
 #+BEGIN_SRC emacs-lisp
 (use-package company
-:ensure t
-:config
-(setq company-idle-delay 0)
-(setq company-minimum-prefix-length 3)
+    :ensure t
+    :config
+    (setq company-idle-delay 0)
+    (setq company-minimum-prefix-length 3)
 
-(global-company-mode t)
+    (global-company-mode t)
 )
 
 (use-package company-lsp
-  :ensure t
-  :config
-(setq compnay-lsp-enable-snippet t)
- (push 'company-lsp company-backends)
+    :ensure t
+    :config
+    (setq compnay-lsp-enable-snippet t)
+    (push 'company-lsp company-backends)
 )
 #+END_SRC
 * Shell 
@@ -226,5 +272,28 @@ Bootstrap use-package
 )
 #+END_SRC
 * Python 
-
+#+BEGIN_SRC emacs-lisp
+(use-package lsp-python-ms
+  :ensure t
+  :hook (python-mode . (lambda ()
+        (require 'lsp-python-ms)
+	(lsp)))
+)  ; or lsp-deferred
+#+END_SRC
+* Restclient
+#+BEGIN_SRC emacs-lisp
+(use-package restclient
+    :ensure t)
+(use-package company-restclient
+    :ensure t
+    :config 
+    (add-to-list 'company-backends 'company-restclient))
+#+END_SRC
+* Load other files
+#+BEGIN_SRC emacs-lisp
+(defun load-if-exists (f)
+  "load the elisp file only if it exists and is readable"
+  (if (file-readable-p f)
+      (load-file f)))
+#+END_SRC
 
