@@ -172,12 +172,18 @@ Bootstrap use-package
 (use-package yasnippet
   :ensure t
   :init
-    (yas-global-mode 1))
+      (yas-global-mode 1))
 
 (use-package yasnippet-snippets
   :ensure t)
 (use-package yasnippet-classic-snippets
   :ensure t)
+
+(use-package auto-yasnippet
+  :ensure t
+  :commands (aya-create aya-expand)
+  :bind (("C-c ~" . aya-create)
+         ("C-c C-~" . aya-expand)))
 #+END_SRC
 * Expand-region
 #+BEGIN_SRC emacs-lisp 
@@ -255,6 +261,15 @@ Bootstrap use-package
     (setq compnay-lsp-enable-snippet t)
     (push 'company-lsp company-backends)
 )
+
+
+(use-package company-statistics         ; Sort company candidates by statistics
+  :ensure t
+  :defer t
+  :config
+  (setq company-statistics-file (emacs-d "cache/company-statistics"))
+  (with-eval-after-load 'company
+    (company-statistics-mode)))
 #+END_SRC
 * Shell 
 * Latex
@@ -266,9 +281,9 @@ Bootstrap use-package
    :mode ("\\.jl$" . julia-mode))
 
 (use-package lsp-julia
-:ensure t
-:config 
-(setq lsp-julia-package-dir nil)
+    :ensure t
+    :config 
+    (setq lsp-julia-package-dir nil)
 )
 #+END_SRC
 * Python 
@@ -279,6 +294,7 @@ Bootstrap use-package
         (require 'lsp-python-ms)
 	(lsp)))
 )  ; or lsp-deferred
+(setq lsp-python-ms--command-string (expand-file-name "~/mspyls/Microsoft.Python.LanguageServer"))
 #+END_SRC
 * Restclient
 #+BEGIN_SRC emacs-lisp
