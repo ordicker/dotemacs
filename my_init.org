@@ -63,6 +63,21 @@ Bootstrap use-package
   (beacon-mode 1)
 )
 #+END_SRC
+* Winner
+undo windows state with C-c left/right
+#+BEGIN_SRC emacs-lisp
+(winner-mode 1)
+#+END_SRC
+* Anzu
+search and replace with regexp
+#+BEGIN_SRC emacs-lisp
+(use-package anzu
+  :ensure t
+  :bind (("M-%" . anzu-query-replace)
+         ("C-M-%" . anzu-query-replace-regexp))
+  :config
+  (global-anzu-mode))
+#+END_SRC
 * EditorConfig
 #+BEGIN_SRC emacs-lisp
 (use-package editorconfig
