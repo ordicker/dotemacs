@@ -64,9 +64,18 @@ Bootstrap use-package
 #+END_SRC
 * Magit
 #+BEGIN_SRC emacs-lisp 
+(use-package diff-hl
+  :ensure t
+  :config
+  (global-diff-hl-mode)
+)
 (use-package magit
   :bind
-  (("C-x g" . magit-status )))
+  (("C-x g" . magit-status))
+  :config
+  (global-magit-file-mode 1)
+  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
+)
 
 (use-package exec-path-from-shell
   :disabled
