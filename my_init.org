@@ -51,7 +51,12 @@ Bootstrap use-package
   (dashboard-setup-startup-hook)
   (setq dashboard-startup-banner 'logo)
   (setq dashboard-banner-logo-title "Welcome to Dicker's Emacs")
-  (setq dashboard-set-navigator t))
+  (setq dashboard-set-navigator t)
+  (setq dashboard-items '((recents  . 5)
+                        (bookmarks . 5)
+                        (projects . 5)
+                        (agenda . 5)))
+)
 #+END_SRC
 ** Super-save
 #+BEGIN_SRC emacs-lisp
