@@ -200,9 +200,15 @@ return to the last place on the save buffer
   (which-key-mode +1)
 )
 #+END_SRC
+** No littering
+#+BEGIN_SRC emacs-lisp
+(use-package no-littering
+  :demand t)
+#+END_SRC
 * Magit
 #+BEGIN_SRC emacs-lisp 
 (use-package magit
+  :ensure t
   :bind
   (("C-x g" . magit-status))
   :config
