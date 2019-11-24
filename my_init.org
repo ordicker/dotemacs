@@ -4,6 +4,11 @@
 (global-auto-revert-mode t)
 (blink-cursor-mode -1)
 #+END_SRC
+** No littering
+#+BEGIN_SRC emacs-lisp
+(use-package no-littering
+  :demand t)
+#+END_SRC
 ** garbage collection 
 #+BEGIN_SRC emacs-lisp
 (setq gc-cons-threshold (* 20 1024 1024))
@@ -199,11 +204,6 @@ return to the last place on the save buffer
   :config
   (which-key-mode +1)
 )
-#+END_SRC
-** No littering
-#+BEGIN_SRC emacs-lisp
-(use-package no-littering
-  :demand t)
 #+END_SRC
 * Magit
 #+BEGIN_SRC emacs-lisp 
