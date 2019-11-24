@@ -216,6 +216,11 @@ return to the last place on the save buffer
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
 )
 
+(use-package forge
+  :ensure t
+  :after magit
+)
+
 (use-package diff-hl
   :ensure t
   :config
