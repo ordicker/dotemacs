@@ -50,7 +50,12 @@ Bootstrap use-package
 (use-package solarized-theme
     :config 
     (load-theme 'solarized-light t))
-    
+
+;; modeline
+;; This package requires the fonts included with all-the-icons to be installed. Run M-x all-the-icons-install-fonts to do so.
+(use-package doom-modeline
+      :ensure t
+      :hook (after-init . doom-modeline-mode))
 #+END_SRC
  
 ** Dashboard
