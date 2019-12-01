@@ -1,4 +1,4 @@
-* emacs configuration
+* Emacs configuration
 ** default emacs stuff
 #+BEGIN_SRC emacs-lisp
 (global-auto-revert-mode t)
@@ -41,11 +41,16 @@ Bootstrap use-package
 #+BEGIN_SRC emacs-lisp 
 (set-language-environment "UTF-8")
 (setq default-frame-alist '((font . "DejaVu Sans Mono-14")))
+(tool-bar-mode -1)
+(menu-bar-mode -1)
+;;(use-package zenburn-theme 
+;;   :config
+;;   (load-theme 'zenburn t))
 
-(use-package
-   zenburn-theme 
-   :config
-   (load-theme 'zenburn t))
+(use-package solarized-theme
+    :config 
+    (load-theme 'solarized-light t))
+    
 #+END_SRC
  
 ** Dashboard
@@ -205,6 +210,11 @@ return to the last place on the save buffer
   (which-key-mode +1)
 )
 #+END_SRC
+** Ediff
+#+BEGIN_SRC emacs-lisp
+;; prevent new window for ediff session 
+(setq ediff-window-setup-function 'ediff-setup-windows-plain)
+#+END_SRC
 * Magit
 #+BEGIN_SRC emacs-lisp 
 (use-package magit
@@ -214,6 +224,7 @@ return to the last place on the save buffer
   :config
   (global-magit-file-mode 1)
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
+  (add-hook 'after-save-hook 'magit-after-save-refresh-status t)
 )
 
 (use-package forge
@@ -294,7 +305,7 @@ return to the last place on the save buffer
   :ensure t
   :bind ("C-=" . er/expand-region))
 #+END_SRC
-* lsp-mode
+* Lsp-mode
 #+BEGIN_SRC emacs-lisp
 (use-package lsp-mode
   :ensure t
