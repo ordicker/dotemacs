@@ -3,6 +3,7 @@
 #+BEGIN_SRC emacs-lisp
 (global-auto-revert-mode t)
 (blink-cursor-mode -1)
+(global-auto-revert-mode t)
 #+END_SRC
 ** garbage collection 
 #+BEGIN_SRC emacs-lisp
