@@ -233,6 +233,7 @@ return to the last place on the save buffer
   :config
   (global-magit-file-mode 1)
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
+  (add-hook 'after-save-hook 'magit-after-save-refresh-status t)
 )
 
 (use-package forge
