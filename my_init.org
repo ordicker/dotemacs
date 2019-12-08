@@ -249,6 +249,12 @@ return to the last place on the save buffer
   (global-diff-hl-mode +1)
   (add-hook 'dired-mode-hook 'diff-hl-dired-mode)
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
+  ;; better coloring for light theme 
+  :init 
+  (custom-set-faces
+  '(diff-hl-change ((t (:background "#3a81c3"))))
+  '(diff-hl-insert ((t (:background "#7ccd7c"))))
+  '(diff-hl-delete ((t (:background "#ee6363")))))
 )
 
 (use-package exec-path-from-shell
