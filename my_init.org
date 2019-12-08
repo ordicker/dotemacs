@@ -3,8 +3,10 @@
 #+BEGIN_SRC emacs-lisp
 (global-auto-revert-mode t)
 (blink-cursor-mode -1)
+(setq-default cursor-type 'bar)
 (global-auto-revert-mode t)
 (delete-selection-mode 1)
+(cua-selection-mode 1)
 #+END_SRC
 ** garbage collection 
 #+BEGIN_SRC emacs-lisp
@@ -45,14 +47,14 @@ Bootstrap use-package
 (setq default-frame-alist '((font . "DejaVu Sans Mono-14")))
 (tool-bar-mode -1)
 (menu-bar-mode -1)
-(use-package zenburn-theme 
-   :config
-   (load-theme 'zenburn t))
+;;(use-package zenburn-theme 
+;;   :config
+;;  (load-theme 'zenburn t))
 
-;;(use-package solarized-theme
-;;    :config 
-;;    (load-theme 'solarized-light t)
-;;    (setq x-underline-at-descent-line t))
+(use-package solarized-theme
+    :config 
+    (load-theme 'solarized-light t)
+    (setq x-underline-at-descent-line t))
 
 ;; modeline
 ;; This package requires the fonts included with all-the-icons to be installed. Run M-x all-the-icons-install-fonts to do so.
