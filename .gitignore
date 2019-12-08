@@ -10,3 +10,4 @@
 /.lsp-session-*
 /places
 /var/
+/.cache/
