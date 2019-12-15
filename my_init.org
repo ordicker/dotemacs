@@ -83,6 +83,11 @@ Bootstrap use-package
 #+BEGIN_SRC emacs-lisp
 (use-package super-save
   :ensure t
+  :diminish
+  :custom
+  (super-save-auto-save-when-idle t)
+  (auto-save-default nil)
+  (make-backup-files nil)
   :config
   (super-save-mode +1))
 #+END_SRC
@@ -155,6 +160,10 @@ return to the last place on the save buffer
     (setq ivy-display-style 'fancy)
     (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
     ))
+    
+  (use-package amx
+    :ensure t
+    :defer t)
 #+END_SRC
 ** IBUFFER
  #+BEGIN_SRC emacs-lisp
