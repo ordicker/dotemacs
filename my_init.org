@@ -247,6 +247,10 @@ return to the last place on the save buffer
 ;; prevent new window for ediff session 
 (setq ediff-window-setup-function 'ediff-setup-windows-plain)
 #+END_SRC
+** Icons
+#+BEGIN_SRC emacs-lisp
+(use-package all-the-icons)
+#+END_SRC
 * Magit
 #+BEGIN_SRC emacs-lisp 
 (use-package magit
