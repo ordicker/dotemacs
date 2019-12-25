@@ -497,8 +497,10 @@ return to the last place on the save buffer
    :mode ("\\.jl$" . julia-mode))
 
 (use-package lsp-julia
-    :config 
+    :init
     (setq lsp-julia-package-dir nil)
+    :config
+    (setq lsp-julia-default-environment "~/.julia/environments/v1.3")
 )
 #+END_SRC
 * Python 
