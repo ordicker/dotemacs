@@ -205,7 +205,8 @@ return to the last place on the save buffer
                                (mode . clojure-mode)
                                (mode . clojurescript-mode)
                                (mode . python-mode)
-                               (mode . c++-mode)))
+                               (mode . c++-mode)
+			       (mode . julia-mode)))
                ("emacs" (or
                          (name . "^\\*scratch\\*$")
                          (name . "^\\*Messages\\*$")))
