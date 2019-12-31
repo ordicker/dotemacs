@@ -320,6 +320,8 @@ return to the last place on the save buffer
 (use-package flyspell
   :diminish "Spl"
   :commands (flyspell-mode flyspell-prog-mode)
+  :config (add-hook 'text-mode-hook 'flyspell-mode)
+          (add-hook 'prog-mode-hook 'flyspell-prog-mode)
   )
 #+END_SRC
 
