@@ -1,4 +1,51 @@
 * Emacs configuration
+** Get to here
+#+BEGIN_SRC emacs-lisp
+(defun edit-configs ()
+  "Opens the README.org file."
+  (interactive)
+  (find-file "~/.emacs.d/my_init.org"))
+
+(global-set-key (kbd "C-x i") #'edit-configs)
+#+END_SRC
+** Constants
+#+BEGIN_SRC emacs-lisp
+(defconst *sys/gui*
+  (display-graphic-p)
+  "Are we running on a GUI Emacs?")
+
+(defconst *sys/win32*
+  (eq system-type 'windows-nt)
+  "Are we running on a WinTel system?")
+
+(defconst *sys/linux*
+  (eq system-type 'gnu/linux)
+  "Are we running on a GNU/Linux system?")
+
+(defconst *sys/mac*
+  (eq system-type 'darwin)
+  "Are we running on a Mac system?")
+
+(defconst *sys/root*
+  (string-equal "root" (getenv "USER"))
+  "Are you a ROOT user?")
+
+(defconst *rg*
+  (executable-find "rg")
+  "Do we have ripgrep?")
+
+(defconst *python3*
+  (executable-find "python3")
+  "Do we have python3?")
+
+(defconst *git*
+  (executable-find "git")
+  "Do we have git?")
+
+(defconst *pdflatex*
+  (executable-find "pdflatex")
+  "Do we have pdflatex?")
+#+END_SRC
 ** default emacs stuff
 #+BEGIN_SRC emacs-lisp
 (global-auto-revert-mode t)
@@ -93,6 +140,11 @@ Bootstrap use-package
 
 #+END_SRC
  
+** Ace window
+#+BEGIN_SRC emacs=-
+(use-package ace-window
+  :bind ("C-x C-o" . ace-window))
+#+END_SRC
 ** Dashboard
 #+BEGIN_SRC emacs-lisp
 (use-package dashboard
@@ -256,7 +308,21 @@ return to the last place on the save buffer
 #+END_SRC
 ** Icons
 #+BEGIN_SRC emacs-lisp
-(use-package all-the-icons)
+(use-package all-the-icons :if *sys/gui*)
+
+(use-package all-the-icons-dired
+  :after all-the-icons
+  :if *sys/gui*
+  :diminish
+  :custom-face
+  (all-the-icons-dired-dir-face ((t `(:foreground ,(face-background 'default)))))
+  :hook (dired-mode . all-the-icons-dired-mode)
+  :config
+  ;; Workaround for all-the-icons bug until PR merged https://github.com/domtronn/all-the-icons.el/pull/150
+  (when (require 'all-the-icons nil 'noerror)
+    (setq all-the-icons-mode-icon-alist
+          (delete '(erc-mode all-the-icons-faicon "commenting-o" :height 1.0 :v-adjust 0.0 :face all-the-icons-white) all-the-icons-mode-icon-alist))
+    (add-to-list 'all-the-icons-mode-icon-alist '(erc-mode all-the-icons-faicon "commenting-o" :height 1.0 :v-adjust 0.0))))
 #+END_SRC
 * Magit
 #+BEGIN_SRC emacs-lisp 
@@ -487,10 +553,33 @@ return to the last place on the save buffer
     (company-statistics-mode)))
 #+END_SRC
 * Shell 
+#+BEGIN_SRC emacs-lisp
+(use-package shell-here
+  :bind ("M-!" . shell-here)
+  :config
+  (when *sys/linux*
+    (setq explicit-shell-file-name "/bin/bash")))
+#+END_SRC
 * Latex
+** tex
 #+BEGIN_SRC emacs-lisp
 (use-package tex
     :ensure auctex)
+#+END_SRC
+** PDF Tools
+#+BEGIN_SRC emacs-lisp
+(use-package pdf-tools-install
+  :ensure pdf-tools
+  :if (and *sys/gui* (not *sys/win32*))
+  :mode "\\.pdf\\'"
+  :commands (pdf-loader-install)
+  :custom
+  (TeX-view-program-selection '((output-pdf "pdf-tools")))
+  (TeX-view-program-list '(("pdf-tools" "TeX-pdf-tools-sync-view")))
+  :hook
+  (pdf-view-mode . (lambda () (display-line-numbers-mode -1)))
+  :config
+  (pdf-loader-install))
 #+END_SRC
 * Julia
 #+BEGIN_SRC emacs-lisp
