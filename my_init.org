@@ -124,14 +124,19 @@ Bootstrap use-package
 (setq default-frame-alist '((font . "DejaVu Sans Mono-14")))
 (tool-bar-mode -1)
 (menu-bar-mode -1)
-;;(use-package zenburn-theme 
-;;   :config
-;;  (load-theme 'zenburn t))
 
-(use-package solarized-theme
-    :config 
-    (load-theme 'solarized-light t)
-    (setq x-underline-at-descent-line t))
+(use-package solarized-theme)
+
+(use-package heaven-and-hell
+  :ensure t
+  :init
+  (setq heaven-and-hell-themes
+        '((light . solarized-light)
+          (dark . solarized-dark)))
+  ;; Optionall, load themes without asking for confirmation.
+  (setq heaven-and-hell-load-theme-no-confirm t)
+  :hook (after-init . heaven-and-hell-init-hook)
+  :bind ("<f6>" . heaven-and-hell-toggle-theme))
 
 ;; modeline
 ;; This package requires the fonts included with all-the-icons to be installed. Run M-x all-the-icons-install-fonts to do so.
@@ -361,8 +366,7 @@ return to the last place on the save buffer
 * Org-mode stuff
 #+BEGIN_SRC emacs-lisp
 (use-package org-bullets
-    :config
-    (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+    :hook (org-mode . org-bullets-mode))
 
 (use-package htmlize)
 #+END_SRC
