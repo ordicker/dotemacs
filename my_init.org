@@ -148,7 +148,7 @@ Bootstrap use-package
 ** Ace window
 #+BEGIN_SRC emacs=-
 (use-package ace-window
-  :bind ("C-x C-o" . ace-window))
+  :bind ("C-x o" . ace-window))
 #+END_SRC
 ** Dashboard
 #+BEGIN_SRC emacs-lisp
