@@ -329,6 +329,11 @@ return to the last place on the save buffer
           (delete '(erc-mode all-the-icons-faicon "commenting-o" :height 1.0 :v-adjust 0.0 :face all-the-icons-white) all-the-icons-mode-icon-alist))
     (add-to-list 'all-the-icons-mode-icon-alist '(erc-mode all-the-icons-faicon "commenting-o" :height 1.0 :v-adjust 0.0))))
 #+END_SRC
+** Sudo edit
+#+BEGIN_SRC emacs-lisp
+(use-package sudo-edit
+  :commands (sudo-edit))
+#+END_SRC
 * Magit
 #+BEGIN_SRC emacs-lisp 
 (use-package magit
@@ -559,7 +564,7 @@ return to the last place on the save buffer
 * Shell 
 #+BEGIN_SRC emacs-lisp
 (use-package shell-here
-  :bind ("M-!" . shell-here)
+  :bind ("C-c $" . shell-here)
   :config
   (when *sys/linux*
     (setq explicit-shell-file-name "/bin/bash")))
