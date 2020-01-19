@@ -147,7 +147,7 @@ Bootstrap use-package
 #+END_SRC
  
 ** Ace window
-#+BEGIN_SRC emacs=-
+#+BEGIN_SRC emacs-lisp
 (use-package ace-window
   :bind ("C-x o" . ace-window))
 #+END_SRC
@@ -335,6 +335,10 @@ return to the last place on the save buffer
 (use-package sudo-edit
   :commands (sudo-edit))
 #+END_SRC
+** ripgrep
+#+BEGIN_SRC emacs-lisp
+;;(use-package rg)
+#+END_SRC
 * Magit
 #+BEGIN_SRC emacs-lisp 
 (use-package magit
@@ -384,6 +388,9 @@ return to the last place on the save buffer
   :config
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
   (projectile-mode +1))
+
+(use-package projectile-ripgrep
+  :after projectile)
 #+END_SRC
 * Flycheck
 #+BEGIN_SRC emacs-lisp
