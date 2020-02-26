@@ -643,6 +643,17 @@ return to the last place on the save buffer
   (venv-initialize-interactive-shells)
   (venv-initialize-eshell))
 #+END_SRC
+* Matlab
+#+BEGIN_SRC emacs-lisp
+(use-package matlab-mode
+  :hook (matlab-shell)
+  :mode ("\\.m\\'" . matlab-mode)
+  :config
+  (matlab-cedet-setup)
+  :custom
+  (matlab-indent-function t)
+  (matlab-shell-command "matlab"))
+#+END_SRC
 * Restclient
 #+BEGIN_SRC emacs-lisp
 (use-package restclient)
