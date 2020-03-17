@@ -1,3 +1,9 @@
+* Notes 
+** process stuck (doomline) 
+installing this solve it
+$sudo apt-get install elpa-async
+** fonts and icons 
+Run M-x all-the-icons-install-fonts
 * Emacs configuration
 ** Get to here
 #+BEGIN_SRC emacs-lisp
@@ -145,7 +151,6 @@ Bootstrap use-package
   :hook (after-init . doom-modeline-mode)
   :config 
   (setq doom-modeline-project-detection 'project)
-  (setq doom-modeline-env-python-executable "python3")
 )
 
 #+END_SRC
@@ -654,8 +659,10 @@ return to the last place on the save buffer
               ("C-c u" . lsp-ui-imenu)
               ("M-i" . lsp-ui-doc-focus-frame))
   :custom
+  (lsp-ui-doc-enable t)
   (lsp-ui-doc-header t)
   (lsp-ui-doc-include-signature t)
+  (lsp-ui-doc-position 'top)
   (lsp-ui-doc-border (face-foreground 'default))
   (lsp-ui-sideline-enable nil)
   (lsp-ui-sideline-ignore-duplicate t)
@@ -666,7 +673,8 @@ return to the last place on the save buffer
   ;; WORKAROUND Hide mode-line of the lsp-ui-imenu buffer
   ;; https://github.com/emacs-lsp/lsp-ui/issues/243
   (defadvice lsp-ui-imenu (after hide-lsp-ui-imenu-mode-line activate)
-    (setq mode-line-format nil)))
+    (setq mode-line-format nil))
+)
 #+END_SRC
 
 *** Installing lsp-python-ms
@@ -700,7 +708,6 @@ chmod a+x $(git rev-parse --show-toplevel)/output/bin/Release/ubuntu.18.04-x64/p
 
 (setq lsp-python-ms-executable "~/python-language-server/output/bin/Release/ubuntu.18.04-x64/publish/Microsoft.Python.LanguageServer")
 (setq lsp-python-executable-cmd "python3")
-(setq doom-modeline-python-executable lsp-python-executable-cmd)
 
 #+END_SRC
 * Matlab
