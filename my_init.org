@@ -142,7 +142,11 @@ Bootstrap use-package
 ;; modeline
 ;; This package requires the fonts included with all-the-icons to be installed. Run M-x all-the-icons-install-fonts to do so.
 (use-package doom-modeline
-      :hook (after-init . doom-modeline-mode))
+  :hook (after-init . doom-modeline-mode)
+  :config 
+  (setq doom-modeline-project-detection 'project)
+  (setq doom-modeline-env-python-executable "python3")
+)
 
 #+END_SRC
  
@@ -578,7 +582,7 @@ return to the last place on the save buffer
   :config
   (pdf-loader-install))
 #+END_SRC
-* Julia
+* Julia`
 #+BEGIN_SRC emacs-lisp
 (use-package julia-mode
    :defer t
@@ -608,18 +612,96 @@ return to the last place on the save buffer
 #+END_SRC
 * Python 
 #+BEGIN_SRC emacs-lisp
-(use-package python-mode
-  :after flycheck
-  :mode "\\.py\\'"
-  :custom
-  (python-indent-offset 4)
-  (flycheck-python-pycompile-executable "python3")
-  (python-shell-interpreter "python3"))
+;;(use-package python-mode
+;;  :after flycheck
+;;  :mode "\\.py\\'"
+;;  :custom
+;;  (python-indent-offset 4)
+;;  (flycheck-python-pycompile-executable "python3")
+;;  (python-shell-interpreter "python3"))
 
 (use-package virtualenvwrapper
   :config
   (venv-initialize-interactive-shells)
-  (venv-initialize-eshell))
+  (venv-initialize-eshell)
+  (setq venv-location "~/.virtualenv/")
+)
+#+END_SRC
+** LSP-mode  
+#+BEGIN_SRC emacs-lisp
+(use-package lsp-mode
+  :defer t
+  :commands lsp
+  :custom
+  (lsp-auto-guess-root nil)
+  (lsp-prefer-flymake nil) ; Use flycheck instead of flymake
+  (lsp-file-watch-threshold 2000)
+  (read-process-output-max (* 1024 1024))
+  :bind (:map lsp-mode-map ("C-c C-f" . lsp-format-buffer))
+  :hook ((python-mode) . lsp)
+)
+
+(use-package lsp-ui
+  :after lsp-mode
+  :diminish
+  :commands lsp-ui-mode
+  :custom-face
+  (lsp-ui-doc-background ((t (:background nil))))
+  (lsp-ui-doc-header ((t (:inherit (font-lock-string-face italic)))))
+  :bind (:map lsp-ui-mode-map
+              ([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
+              ([remap xref-find-references] . lsp-ui-peek-find-references)
+              ("C-c u" . lsp-ui-imenu)
+              ("M-i" . lsp-ui-doc-focus-frame))
+  :custom
+  (lsp-ui-doc-header t)
+  (lsp-ui-doc-include-signature t)
+  (lsp-ui-doc-border (face-foreground 'default))
+  (lsp-ui-sideline-enable nil)
+  (lsp-ui-sideline-ignore-duplicate t)
+  (lsp-ui-sideline-show-code-actions nil)
+  :config
+  ;; Use lsp-ui-doc-webkit only in GUI
+  (setq lsp-ui-doc-use-webkit t)
+  ;; WORKAROUND Hide mode-line of the lsp-ui-imenu buffer
+  ;; https://github.com/emacs-lsp/lsp-ui/issues/243
+  (defadvice lsp-ui-imenu (after hide-lsp-ui-imenu-mode-line activate)
+    (setq mode-line-format nil)))
+#+END_SRC
+
+*** Installing lsp-python-ms
+1 dotnet-sdk:
+wget -q https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+sudo dpkg -i packages-microsoft-prod.deb
+
+sudo add-apt-repository universe
+sudo apt-get update
+sudo apt-get install apt-transport-https
+sudo apt-get update
+sudo apt-get install dotnet-sdk-3.1
+2 clone and bulid
+git clone https://github.com/Microsoft/python-language-server.git
+cd python-language-server/src/LanguageServer/Impl
+dotnet publish -c Release -r ubuntu.18.04-x64
+chmod a+x $(git rev-parse --show-toplevel)/output/bin/Release/ubuntu.18.04-x64/publish/Microsoft.Python.LanguageServer
+3 change lsp-python-ms-executable
+#+BEGIN_SRC emacs-lisp
+(use-package lsp-python-ms
+  :after lsp-mode python
+  :demand
+  :if *python3*
+  ;;:custom
+  ;;  (lsp-python-executable-cmd "python3")
+  ;;  (lsp-python-ms-python-executable-cmd "python3")
+  :config
+    (setq lsp-python-ms-executable
+    "~/python-language-server/output/bin/Release/ubuntu.18.04-x64/publish/Microsoft.Python.LanguageServer")
+)
+
+(setq lsp-python-ms-executable "~/python-language-server/output/bin/Release/ubuntu.18.04-x64/publish/Microsoft.Python.LanguageServer")
+(setq lsp-python-executable-cmd "python3")
+(setq doom-modeline-python-executable lsp-python-executable-cmd)
+
 #+END_SRC
 * Matlab
 #+BEGIN_SRC emacs-lisp
