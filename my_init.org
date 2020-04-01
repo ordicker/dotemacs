@@ -1,7 +1,4 @@
 * Notes 
-** process stuck (doomline) 
-installing this solve it
-$sudo apt-get install elpa-async
 ** fonts and icons 
 Run M-x all-the-icons-install-fonts
 * Emacs configuration
@@ -347,6 +344,10 @@ return to the last place on the save buffer
 ** ripgrep
 #+BEGIN_SRC emacs-lisp
 ;;(use-package rg)
+#+END_SRC
+** async
+#+BEGIN_SRC emacs-lisp
+(use-package async)
 #+END_SRC
 ** Highlight indent guides
 #+BEGIN_SRC emacs-lisp
