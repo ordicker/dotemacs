@@ -361,6 +361,13 @@ return to the last place on the save buffer
   (highlight-indent-guides-delay 0)
   (highlight-indent-guides-auto-character-face-perc 7))
 #+END_SRC
+* Pass 
+#+BEGIN_SRC emacs-lisp
+(use-package password-store)
+
+(use-package pass
+  :after password-store)
+#+END_SRC
 * Magit
 #+BEGIN_SRC emacs-lisp 
 (use-package magit
