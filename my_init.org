@@ -422,6 +422,12 @@ return to the last place on the save buffer
     :hook (org-mode . org-bullets-mode))
 
 (use-package htmlize)
+
+(use-package org-gcal
+  :config
+  (setq org-gcal-client-id (password-store-get "DevOps/gcal/client-id")
+      org-gcal-client-secret (password-store-get "DevOps/gcal/client-secret")
+      org-gcal-file-alist '(("or.dicker@gmail.com" .  "~/workspace/org/gcal.org"))))
 #+END_SRC
 * Projectile
 #+BEGIN_SRC emacs-lisp 
