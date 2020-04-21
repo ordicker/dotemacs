@@ -615,37 +615,45 @@ return to the last place on the save buffer
   :config
   (pdf-loader-install))
 #+END_SRC
-* Julia`
+* Julia
 #+BEGIN_SRC emacs-lisp
 (use-package julia-mode
    :defer t
    :commands julia-mode
    :mode ("\\.jl$" . julia-mode))
 
-(use-package vterm)
+(use-package lsp-julia
+   :config
+   (setq lsp-julia-default-environment "~/.julia/environments/v1.3")
+   (add-hook 'julia-mode-hook #'lsp-mode)
+)
 
-(use-package julia-snail
-  :hook (julia-mode . julia-snail-mode)
-  :config (progn
-            ;; order matters, unfortunately:
-            (add-to-list 'display-buffer-alist
-                         ;; match buffers named "*julia" in general
-                         '("\\*julia"
-                           ;; actions:
-                           (display-buffer-reuse-window display-buffer-same-window)))
-            (add-to-list 'display-buffer-alist
-                         ;; when displaying buffers named "*julia" in REPL mode
-                         '((lambda (bufname _action)
-                             (and (string-match-p "\\*julia" bufname)
-                                  (with-current-buffer bufname
-                                    (bound-and-true-p julia-snail-repl-mode))))
-                           ;; actions:
-                           (display-buffer-reuse-window display-buffer-pop-up-window)))
-            ))
+
+
+;;(use-package vterm)
+;; 
+;;(use-package julia-snail
+;;  :hook (julia-mode . julia-snail-mode)
+;;  :config (progn
+;;            ;; order matters, unfortunately:
+;;            (add-to-list 'display-buffer-alist
+;;                         ;; match buffers named "*julia" in general
+;;                         '("\\*julia"
+;;                           ;; actions:
+;;                           (display-buffer-reuse-window display-buffer-same-window)))
+;;            (add-to-list 'display-buffer-alist
+;;                         ;; when displaying buffers named "*julia" in REPL mode
+;;                         '((lambda (bufname _action)
+;;                             (and (string-match-p "\\*julia" bufname)
+;;                                  (with-current-buffer bufname
+;;                                    (bound-and-true-p julia-snail-repl-mode))))
+;;                           ;; actions:
+;;                           (display-buffer-reuse-window display-buffer-pop-up-window)))
+;;            ))
 #+END_SRC
 * Python 
-#+BEGIN_SRC emacs-lisp
-;;(use-package python-mode
+  #+BEGIN_SRC emacs-lisp
+  ;;(use-package python-mode
 ;;  :after flycheck
 ;;  :mode "\\.py\\'"
 ;;  :custom
@@ -660,52 +668,7 @@ return to the last place on the save buffer
   (setq venv-location "~/.virtualenv/")
 )
 #+END_SRC
-** LSP-mode  
-#+BEGIN_SRC emacs-lisp
-(use-package lsp-mode
-  :defer t
-  :commands lsp
-  :custom
-  (lsp-auto-guess-root nil)
-  (lsp-prefer-flymake nil) ; Use flycheck instead of flymake
-  (lsp-file-watch-threshold 2000)
-  (read-process-output-max (* 1024 1024))
-  :bind (:map lsp-mode-map ("C-c C-f" . lsp-format-buffer))
-  :hook ((python-mode) . lsp)
-)
-
-(use-package lsp-ui
-  :after lsp-mode
-  :diminish
-  :commands lsp-ui-mode
-  :custom-face
-  (lsp-ui-doc-background ((t (:background nil))))
-  (lsp-ui-doc-header ((t (:inherit (font-lock-string-face italic)))))
-  :bind (:map lsp-ui-mode-map
-              ([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
-              ([remap xref-find-references] . lsp-ui-peek-find-references)
-              ("C-c u" . lsp-ui-imenu)
-              ("M-i" . lsp-ui-doc-focus-frame))
-  :custom
-  (lsp-ui-doc-enable t)
-  (lsp-ui-doc-header t)
-  (lsp-ui-doc-include-signature t)
-  (lsp-ui-doc-position 'top)
-  (lsp-ui-doc-border (face-foreground 'default))
-  (lsp-ui-sideline-enable nil)
-  (lsp-ui-sideline-ignore-duplicate t)
-  (lsp-ui-sideline-show-code-actions nil)
-  :config
-  ;; Use lsp-ui-doc-webkit only in GUI
-  (setq lsp-ui-doc-use-webkit t)
-  ;; WORKAROUND Hide mode-line of the lsp-ui-imenu buffer
-  ;; https://github.com/emacs-lsp/lsp-ui/issues/243
-  (defadvice lsp-ui-imenu (after hide-lsp-ui-imenu-mode-line activate)
-    (setq mode-line-format nil))
-)
-#+END_SRC
-
-*** Installing lsp-python-ms
+** Installing lsp-python-ms
 1 dotnet-sdk:
 wget -q https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
 sudo dpkg -i packages-microsoft-prod.deb
@@ -737,6 +700,50 @@ chmod a+x $(git rev-parse --show-toplevel)/output/bin/Release/ubuntu.18.04-x64/p
 (setq lsp-python-ms-executable "~/python-language-server/output/bin/Release/ubuntu.18.04-x64/publish/Microsoft.Python.LanguageServer")
 (setq lsp-python-executable-cmd "python3")
 
+#+END_SRC
+* LSP-mode  
+#+BEGIN_SRC emacs-lisp
+(use-package lsp-mode
+  :defer t
+  :commands lsp
+  :custom
+  (lsp-auto-guess-root nil)
+  (lsp-prefer-flymake nil) ; Use flycheck instead of flymake
+  (lsp-file-watch-threshold 2000)
+  (read-process-output-max (* 1024 1024))
+  :bind (:map lsp-mode-map ("C-c C-f" . lsp-format-buffer))
+  :hook ((python-mode julia-mode) . lsp)
+)
+
+(use-package lsp-ui
+  :after lsp-mode
+  :diminish
+  :commands lsp-ui-mode
+  :custom-face
+  (lsp-ui-doc-background ((t (:background nil))))
+  (lsp-ui-doc-header ((t (:inherit (font-lock-string-face italic)))))
+  :bind (:map lsp-ui-mode-map
+              ([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
+              ([remap xref-find-references] . lsp-ui-peek-find-references)
+              ("C-c u" . lsp-ui-imenu)
+              ("M-i" . lsp-ui-doc-focus-frame))
+  :custom
+  (lsp-ui-doc-enable t)
+  (lsp-ui-doc-header t)
+  (lsp-ui-doc-include-signature t)
+  (lsp-ui-doc-position 'top)
+  (lsp-ui-doc-border (face-foreground 'default))
+  (lsp-ui-sideline-enable nil)
+  (lsp-ui-sideline-ignore-duplicate t)
+  (lsp-ui-sideline-show-code-actions nil)
+  :config
+  ;; Use lsp-ui-doc-webkit only in GUI
+  (setq lsp-ui-doc-use-webkit t)
+  ;; WORKAROUND Hide mode-line of the lsp-ui-imenu buffer
+  ;; https://github.com/emacs-lsp/lsp-ui/issues/243
+  (defadvice lsp-ui-imenu (after hide-lsp-ui-imenu-mode-line activate)
+    (setq mode-line-format nil))
+)
 #+END_SRC
 * Matlab
 #+BEGIN_SRC emacs-lisp
