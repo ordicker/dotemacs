@@ -145,6 +145,12 @@ Bootstrap use-package
 ;; modeline
 ;; This package requires the fonts included with all-the-icons to be installed. Run M-x all-the-icons-install-fonts to do so.
 (use-package doom-modeline
+  :custom 
+  (inhibit-compacting-font-caches t)
+  ;;(doom-modeline-minor-modes t)
+  (doom-modeline-icon t)
+  (doom-modeline-major-mode-color-icon t)
+  (doom-modeline-height 15)
   :hook (after-init . doom-modeline-mode)
   :config 
   (setq doom-modeline-project-detection 'project)
@@ -347,7 +353,7 @@ return to the last place on the save buffer
 #+END_SRC
 ** async
 #+BEGIN_SRC emacs-lisp
-(use-package async)
+;;(use-package async)
 #+END_SRC
 ** Highlight indent guides
 #+BEGIN_SRC emacs-lisp
@@ -365,8 +371,16 @@ return to the last place on the save buffer
 #+BEGIN_SRC emacs-lisp
 (use-package password-store)
 
+(defun pass-pull-and-push-to-git ()
+   (message "pull and push changes to git") 
+   (lambda () (password-store--run-git "pull")
+              (password-store--run-git "push")))
+
 (use-package pass
-  :after password-store)
+  :after password-store
+  :config
+  (advice-add #'pass-update-buffer :before #'pass-pull-and-push-to-git)
+)
 #+END_SRC
 * Magit
 #+BEGIN_SRC emacs-lisp 
