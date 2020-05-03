@@ -392,6 +392,7 @@ return to the last place on the save buffer
   :bind
   (("C-x g" . magit-status))
   :config
+  (magit-save-repository-buffers 'dontask)
   (global-magit-file-mode 1)
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
   (add-hook 'after-save-hook 'magit-after-save-refresh-status t)
