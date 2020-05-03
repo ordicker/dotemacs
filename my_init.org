@@ -186,6 +186,10 @@ Bootstrap use-package
   (auto-save-default nil)
   (make-backup-files nil)
   :config
+  ;; add integration with ace-window
+  (add-to-list 'super-save-triggers 'ace-window 'magit)
+  ;; save on find-file
+  (add-to-list 'super-save-hook-triggers 'find-file-hook)
   (super-save-mode +1))
 #+END_SRC
 ** Beacon
@@ -424,6 +428,7 @@ return to the last place on the save buffer
 (use-package htmlize)
 
 (use-package org-gcal
+  :defer t
   :config
   (setq org-gcal-client-id (password-store-get "DevOps/gcal/client-id")
       org-gcal-client-secret (password-store-get "DevOps/gcal/client-secret")
@@ -589,13 +594,13 @@ return to the last place on the save buffer
   (lsp-ui-sideline-enable nil)
   (lsp-ui-sideline-ignore-duplicate t)
   (lsp-ui-sideline-show-code-actions nil)
-  :config
+  ;;:config
   ;; Use lsp-ui-doc-webkit only in GUI
-  (setq lsp-ui-doc-use-webkit t)
+  ;;(setq lsp-ui-doc-use-webkit t)
   ;; WORKAROUND Hide mode-line of the lsp-ui-imenu buffer
   ;; https://github.com/emacs-lsp/lsp-ui/issues/243
-  (defadvice lsp-ui-imenu (after hide-lsp-ui-imenu-mode-line activate)
-    (setq mode-line-format nil))
+  ;;(defadvice lsp-ui-imenu (after hide-lsp-ui-imenu-mode-line activate)
+  ;;  (setq mode-line-format nil))
 )
 #+END_SRC
 
