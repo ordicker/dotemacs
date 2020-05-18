@@ -625,7 +625,8 @@ return to the last place on the save buffer
     :config
     (setq compnay-lsp-enable-snippet t)
     (push 'company-lsp company-backends)
-)
+    :custom 
+    (company-lsp-cache-candidates 'auto))
 
 
 (use-package company-statistics         ; Sort company candidates by statistics
@@ -709,14 +710,17 @@ return to the last place on the save buffer
 ;;            ))
 #+END_SRC
 * Python 
+chmod +x ~/.emacs.d/var/lsp-python-ms/Microsoft.Python.LanguageServer
+on ubuntu 20.04: 
+sudo apt install python-is-python3
   #+BEGIN_SRC emacs-lisp
-  ;;(use-package python-mode
-;;  :after flycheck
-;;  :mode "\\.py\\'"
-;;  :custom
-;;  (python-indent-offset 4)
-;;  (flycheck-python-pycompile-executable "python3")
-;;  (python-shell-interpreter "python3"))
+(use-package python-mode
+   :after flycheck
+   :mode "\\.py\\'"
+   :custom
+   (python-indent-offset 4)
+   (flycheck-python-pycompile-executable "python3")
+   (python-shell-interpreter "python3"))
 
 (use-package virtualenvwrapper
   :config
@@ -743,20 +747,9 @@ chmod a+x $(git rev-parse --show-toplevel)/output/bin/Release/ubuntu.18.04-x64/p
 3 change lsp-python-ms-executable
 #+BEGIN_SRC emacs-lisp
 (use-package lsp-python-ms
-  :after lsp-mode python
-  :demand
-  :if *python3*
-  ;;:custom
-  ;;  (lsp-python-executable-cmd "python3")
-  ;;  (lsp-python-ms-python-executable-cmd "python3")
-  :config
-    (setq lsp-python-ms-executable
-    "~/python-language-server/output/bin/Release/ubuntu.18.04-x64/publish/Microsoft.Python.LanguageServer")
-)
+  :after lsp-mode python)
 
-(setq lsp-python-ms-executable "~/python-language-server/output/bin/Release/ubuntu.18.04-x64/publish/Microsoft.Python.LanguageServer")
 (setq lsp-python-executable-cmd "python3")
-
 #+END_SRC
 * Matlab
 #+BEGIN_SRC emacs-lisp
