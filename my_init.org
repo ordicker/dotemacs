@@ -90,7 +90,35 @@ Smooth Scrolling
 #+END_SRC
 ** garbage collection 
 #+BEGIN_SRC emacs-lisp
-(setq gc-cons-threshold (* 20 1024 1024))
+(defvar better-gc-cons-threshold 67108864 ; 64mb
+  "The default value to use for `gc-cons-threshold'.
+
+If you experience freezing, decrease this.  If you experience stuttering, increase this.")
+
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (setq gc-cons-threshold better-gc-cons-threshold)
+            (setq file-name-handler-alist file-name-handler-alist-original)
+            (makunbound 'file-name-handler-alist-original)))
+;; Garbage Collect when Emacs is out of focus and avoid garbage collection when using minibuffer.
+
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (if (boundp 'after-focus-change-function)
+                (add-function :after after-focus-change-function
+                              (lambda ()
+                                (unless (frame-focus-state)
+                                  (garbage-collect))))
+              (add-hook 'after-focus-change-function 'garbage-collect))
+            (defun gc-minibuffer-setup-hook ()
+              (setq gc-cons-threshold (* better-gc-cons-threshold 2)))
+
+            (defun gc-minibuffer-exit-hook ()
+              (garbage-collect)
+              (setq gc-cons-threshold better-gc-cons-threshold))
+
+            (add-hook 'minibuffer-setup-hook #'gc-minibuffer-setup-hook)
+            (add-hook 'minibuffer-exit-hook #'gc-minibuffer-exit-hook)))
 #+END_SRC
 
 ** use-package
@@ -576,6 +604,7 @@ return to the last place on the save buffer
   (lsp-prefer-flymake nil) ; Use flycheck instead of flymake
   (lsp-file-watch-threshold 2000)
   (read-process-output-max (* 1024 1024))
+  (lsp-eldoc-hook nil)
   :bind (:map lsp-mode-map ("C-c C-f" . lsp-format-buffer))
   :hook ((python-mode julia-mode) . lsp)
 )
@@ -593,10 +622,8 @@ return to the last place on the save buffer
               ("C-c u" . lsp-ui-imenu)
               ("M-i" . lsp-ui-doc-focus-frame))
   :custom
-  (lsp-ui-doc-enable t)
   (lsp-ui-doc-header t)
   (lsp-ui-doc-include-signature t)
-  (lsp-ui-doc-position 'top)
   (lsp-ui-doc-border (face-foreground 'default))
   (lsp-ui-sideline-enable nil)
   (lsp-ui-sideline-ignore-duplicate t)
@@ -654,6 +681,7 @@ return to the last place on the save buffer
 #+END_SRC
 * Latex
 ** tex
+sudo apt install auctex texlive-full
 #+BEGIN_SRC emacs-lisp
 (use-package tex
     :ensure auctex)
@@ -726,7 +754,7 @@ sudo apt install python-is-python3
   :config
   (venv-initialize-interactive-shells)
   (venv-initialize-eshell)
-  (setq venv-location "~/.virtualenv/")
+  (setq venv-location "~/.virtualenvs/")
 )
 #+END_SRC
 ** Installing lsp-python-ms
@@ -747,9 +775,10 @@ chmod a+x $(git rev-parse --show-toplevel)/output/bin/Release/ubuntu.18.04-x64/p
 3 change lsp-python-ms-executable
 #+BEGIN_SRC emacs-lisp
 (use-package lsp-python-ms
-  :after lsp-mode python)
-
-(setq lsp-python-executable-cmd "python3")
+  :after lsp-mode python
+  :if *python*
+  :custom
+  (lsp-python-executable-cmd "python3"))
 #+END_SRC
 * Matlab
 #+BEGIN_SRC emacs-lisp
