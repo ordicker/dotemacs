@@ -605,6 +605,7 @@ return to the last place on the save buffer
   (lsp-file-watch-threshold 2000)
   (read-process-output-max (* 1024 1024))
   (lsp-eldoc-hook nil)
+  (lsp-signature-auto-activate nil)
   :bind (:map lsp-mode-map ("C-c C-f" . lsp-format-buffer))
   :hook ((python-mode julia-mode) . lsp)
 )
@@ -776,7 +777,7 @@ chmod a+x $(git rev-parse --show-toplevel)/output/bin/Release/ubuntu.18.04-x64/p
 #+BEGIN_SRC emacs-lisp
 (use-package lsp-python-ms
   :after lsp-mode python
-  :if *python*
+  :if *python3*
   :custom
   (lsp-python-executable-cmd "python3"))
 #+END_SRC
