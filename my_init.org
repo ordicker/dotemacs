@@ -711,7 +711,7 @@ sudo apt install auctex texlive-full
 
 (use-package lsp-julia
    :config
-   (setq lsp-julia-default-environment "~/.julia/environments/v1.3")
+   (setq lsp-julia-default-environment "~/.julia/environments/v1.4")
    (add-hook 'julia-mode-hook #'lsp-mode)
 )
 
