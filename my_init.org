@@ -583,7 +583,7 @@ return to the last place on the save buffer
   (read-process-output-max (* 1024 1024))
   (lsp-eldoc-hook nil)
   :bind (:map lsp-mode-map ("C-c C-f" . lsp-format-buffer))
-  :hook ((python-mode julia-mode) . lsp))
+  :hook ((python-mode julia-mode c-mode c++-mode) . lsp))
 
 (use-package lsp-ui :commands lsp-ui-mode)
 
@@ -659,9 +659,32 @@ sudo apt install auctex texlive-full
 #+END_SRC
 * Python 
 #+BEGIN_SRC emacs-lisp
-(add-to-list 'exec-path "~/anaconda3/bin/")
+;;(add-to-list 'exec-path "~/anaconda3/bin/")
 (use-package virtualenv)
+
+(use-package python-mode
+  :ensure nil
+  :after flycheck
+  :mode "\\.py\\'"
+  :custom
+  (python-indent-offset 4)
+  (flycheck-python-pycompile-executable "python3")
+  (python-shell-interpreter "python3"))
+
+(use-package lsp-pyright
+  :hook (python-mode . (lambda () (require 'lsp-pyright)))
+  :init (when (executable-find "python3")
+          (setq lsp-pyright-python-executable-cmd "python3")))
 #+END_SRC
+* C++
+install clangd 
+$sudo apt-get install clangd-9
+#+BEGIN_SRC emacs-lisp
+(use-package modern-cpp-font-lock
+  :diminish t
+  :init (modern-c++-font-lock-global-mode t))
+#+END_SRC
+
 * Matlab
 #+BEGIN_SRC emacs-lisp
 (use-package matlab-mode
