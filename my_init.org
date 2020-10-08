@@ -658,6 +658,10 @@ sudo apt install auctex texlive-full
 
 #+END_SRC
 * Python 
+pyright need node version> 12.0.0
+to install that 
+$ sudo npm install n -g
+$ sudo n stable
 #+BEGIN_SRC emacs-lisp
 ;;(add-to-list 'exec-path "~/anaconda3/bin/")
 (use-package virtualenv)
