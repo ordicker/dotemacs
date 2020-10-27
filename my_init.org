@@ -425,8 +425,8 @@ return to the last place on the save buffer
 #+END_SRC
 * Org-mode stuff
 #+BEGIN_SRC emacs-lisp
-(use-package org-bullets
-    :hook (org-mode . org-bullets-mode))
+(use-package org-superstar
+      :hook (org-mode . org-superstar-mode))
 
 (use-package ox-reveal
     :config
