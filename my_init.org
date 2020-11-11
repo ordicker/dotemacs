@@ -294,7 +294,6 @@ return to the last place on the save buffer
   (interactive "P")
   (bufler-list)
   (delete-other-windows)
-
 )
 
 (global-set-key (kbd "C-x C-b") 'mz/bufler-one-window)
@@ -722,3 +721,8 @@ $sudo apt-get install clangd-9
     (add-to-list 'company-backends 'company-restclient))
 #+END_SRC
 
+* YAML
+#+BEGIN_SRC emacs-lisp
+(use-package yaml-mode)
+
+#+END_SRC
