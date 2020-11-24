@@ -683,6 +683,7 @@ $ sudo n stable
 install clangd 
 $sudo apt-get install clangd-9
 #+BEGIN_SRC emacs-lisp
+(setq-default c-basic-offset 4)
 ;; TRAMP support 
 (with-eval-after-load 'lsp-mode (lsp-register-client
 (make-lsp-client
@@ -696,8 +697,6 @@ $sudo apt-get install clangd-9
   :init (modern-c++-font-lock-global-mode t))
 
 (use-package cuda-mode)
-
-(use-package clang-format)
 
 #+END_SRC
 
