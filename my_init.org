@@ -1,6 +1,12 @@
 * Notes 
 ** fonts and icons 
 Run M-x all-the-icons-install-fonts
+
+** google drive on linux 
+[[https://github.com/astrada/google-drive-ocamlfuse][google-drive-ocamlfuse]]
+[[https://github.com/astrada/google-drive-ocamlfuse/wiki/Team-Drives][Team Drives]]
+mount command
+google-drive-ocamlfuse -label GalGalaim ~/GoogleDrive/
 * Emacs configuration
 ** Get to here
 #+BEGIN_SRC emacs-lisp
@@ -421,6 +427,9 @@ return to the last place on the save buffer
   :config
   (exec-path-from-shell-copy-env "SSH_AGENT_PID")
   (exec-path-from-shell-copy-env "SSH_AUTH_SOCK"))
+
+;; Github markdown render
+(use-package gh-md)
 #+END_SRC
 * Org-mode stuff
 #+BEGIN_SRC emacs-lisp
@@ -573,7 +582,6 @@ return to the last place on the save buffer
 * lsp-mode
 #+BEGIN_SRC emacs-lisp
 (use-package lsp-mode
-  :defer t
   :commands lsp
   :custom
   (lsp-auto-guess-root nil)
@@ -622,6 +630,12 @@ return to the last place on the save buffer
   (("<f5>" . quickrun)
    ("M-<f5>" . quickrun-shell)))
 #+END_SRC
+** vterm
+[[https://github.com/akermu/emacs-libvterm][github]]
+#+begin_src emacs-lisp
+(use-package vterm
+    :ensure t)
+#+end_src
 * Latex
 ** tex
 sudo apt install auctex texlive-full
@@ -666,7 +680,6 @@ $ sudo n stable
 (use-package virtualenv)
 
 (use-package python-mode
-  :ensure nil
   :after flycheck
   :mode "\\.py\\'"
   :custom
