@@ -738,3 +738,10 @@ $sudo apt-get install clangd-9
 (use-package yaml-mode)
 
 #+END_SRC
+* OpenSCAD
+$sudo apt-get install openscad
+#+begin_src emacs-lisp
+(use-package scad-mode)
+(use-package scad-preview)
+#+end_src
+
