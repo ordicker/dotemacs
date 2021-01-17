@@ -711,6 +711,8 @@ $sudo apt-get install clangd-9
 
 (use-package cuda-mode)
 
+;;; cmake
+(use-package cmake-mode)
 #+END_SRC
 
 * Matlab
