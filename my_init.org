@@ -366,7 +366,11 @@ return to the last place on the save buffer
 #+BEGIN_SRC emacs-lisp
 ;;(use-package async)
 #+END_SRC
-** Highlight indent guides
+** TRAMP
+#+begin_src emacs-lisp
+(use-package tramp)
+#+end_src
+
 #+BEGIN_SRC emacs-lisp
 (use-package highlight-indent-guides
   :if *sys/gui*
@@ -700,7 +704,7 @@ $sudo apt-get install clangd-9
 ;; TRAMP support 
 (with-eval-after-load 'lsp-mode (lsp-register-client
 (make-lsp-client
-  :new-connection (lsp-tramp-connection "clangd-9")
+  :new-connection (lsp-tramp-connection "clangd-10")
   :major-modes '(c-mode c++-mode cuda-mode)
   :remote? t
   :server-id 'clangd-remote)))
