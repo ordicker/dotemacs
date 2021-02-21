@@ -698,7 +698,7 @@ $ sudo n stable
 #+END_SRC
 * C/C++/CUDA
 install clangd 
-$sudo apt-get install clangd-9
+$sudo apt-get install clangd-10
 #+BEGIN_SRC emacs-lisp
 (setq-default c-basic-offset 4)
 ;; TRAMP support 
@@ -708,6 +708,7 @@ $sudo apt-get install clangd-9
   :major-modes '(c-mode c++-mode cuda-mode)
   :remote? t
   :server-id 'clangd-remote)))
+;; (lsp-log-io t)
 
 (use-package modern-cpp-font-lock
   :diminish t
