@@ -409,9 +409,9 @@ return to the last place on the save buffer
   (add-hook 'after-save-hook 'magit-after-save-refresh-status t)
 )
 
-(use-package forge
-  :after magit
-)
+;;(use-package forge
+;;  :after magit
+;;)
 
 (use-package diff-hl
   :config
@@ -708,7 +708,14 @@ $sudo apt-get install clangd-10
   :major-modes '(c-mode c++-mode cuda-mode)
   :remote? t
   :server-id 'clangd-remote)))
-;; (lsp-log-io t)
+
+
+(setq lsp-log-io t)
+(setq lsp-clients-clangd-args `("-j=2"
+                                "--background-index"
+                                "--clang-tidy"
+				 "--completion-style=detailed"))
+
 
 (use-package modern-cpp-font-lock
   :diminish t
