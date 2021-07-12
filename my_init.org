@@ -65,6 +65,8 @@ google-drive-ocamlfuse -label GalGalaim ~/GoogleDrive/
 (delete-selection-mode 1)
 (cua-selection-mode 1)
 (global-hl-line-mode 1)
+(setq split-height-threshold nil)
+(setq split-width-threshold 0)
 #+END_SRC
 ** Key binding
 #+BEGIN_SRC emacs-lisp
@@ -143,7 +145,7 @@ Bootstrap use-package
 ** Theme
 #+BEGIN_SRC emacs-lisp 
 (set-language-environment "UTF-8")
-(setq default-frame-alist '((font . "DejaVu Sans Mono-14")))
+(setq default-frame-alist '((font . "DejaVu Sans Mono-16")))
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 
@@ -479,8 +481,8 @@ return to the last place on the save buffer
 (use-package flyspell
   :diminish "Spl"
   :commands (flyspell-mode flyspell-prog-mode)
-  :config (add-hook 'text-mode-hook 'flyspell-mode)
-          (add-hook 'prog-mode-hook 'flyspell-prog-mode)
+  :init (add-hook 'text-mode-hook 'flyspell-mode)
+        (add-hook 'prog-mode-hook 'flyspell-prog-mode)
   )
 #+END_SRC
 
@@ -591,13 +593,20 @@ return to the last place on the save buffer
   :init
   (setq lsp-auto-guess-root nil)
   (setq lsp-prefer-flymake nil) ; Use flycheck instead of flymake
-  (setq lsp-file-watch-threshold 2000)
-  (setq read-process-output-max (* 1024 1024))
+  (setq lsp-file-watch-threshold 10000)
+  (setq read-process-output-max (* 2 1024 1024))
   (setq lsp-eldoc-hook nil)
+  (setq lsp-idle-delay 0.500)
   :bind (:map lsp-mode-map ("C-c C-f" . lsp-format-buffer))
-  :hook ((python-mode julia-mode c-mode c++-mode cuda-mode) . lsp))
+  :hook ((julia-mode python-mode c-mode c++-mode cuda-mode) . lsp)) 
 
-(use-package lsp-ui :commands lsp-ui-mode)
+(use-package lsp-ui 
+   :init
+   (setq lsp-eldoc-enable-hover nil)
+   (setq lsp-signature-auto-activate nil)
+   (setq lsp-signature-render-documentation nil)
+   (setq lsp-ui-doc-show-with-cursor nil)
+   :commands lsp-ui-mode)
 #+END_SRC
 
 * Compeny
