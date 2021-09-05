@@ -281,16 +281,28 @@ return to the last place on the save buffer
   (setq marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil))
 )
 #+END_SRC
-** Bufler
+** IBuffer
 #+BEGIN_SRC emacs-lisp
-(use-package bufler :ensure t)
-(defun mz/bufler-one-window (&optional force-refresh)
-  (interactive "P")
-  (bufler-list)
-  (delete-other-windows)
-)
-
-(global-set-key (kbd "C-x C-b") 'mz/bufler-one-window)
+(use-package ibuffer
+  :ensure nil
+  :bind ("C-x C-b" . ibuffer)
+  :init
+  (use-package ibuffer-vc
+    :commands (ibuffer-vc-set-filter-groups-by-vc-root)
+    :custom
+    (ibuffer-vc-skip-if-remote 'nil))
+  :custom
+  (ibuffer-formats
+   '((mark modified read-only locked " "
+           (name 35 35 :left :elide)
+           " "
+           (size 9 -1 :right)
+           " "
+           (mode 16 16 :left :elide)
+           " " filename-and-process)
+     (mark " "
+           (name 16 -1)
+           " " filename))))
 #+END_SRC
 
 ** Load other files
@@ -392,7 +404,7 @@ return to the last place on the save buffer
   (("C-x g" . magit-status))
   :config
   (magit-save-repository-buffers 'dontask)
-  (global-magit-file-mode 1)
+  ;;(global-magit-file-mode 1)
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
   (add-hook 'after-save-hook 'magit-after-save-refresh-status t)
 )
@@ -717,8 +729,7 @@ $sudo apt-get install clangd-10
   :remote? t
   :server-id 'clangd-remote)))
 
-
-(setq lsp-log-io t)
+;;(setq lsp-log-io t) ; bug with lsp-mode and tramp
 (setq lsp-clients-clangd-args `("-j=2"
                                 "--background-index"
                                 "--clang-tidy"
