@@ -1,4 +1,6 @@
 * Notes 
+** emacs configuration
+--prefix=/usr/local/stow/emacs-27.1 --with-x-toolkit=gtk --with-xwidgets --with-cairo --with-mailutils
 ** fonts and icons 
 Run M-x all-the-icons-install-fonts
 
