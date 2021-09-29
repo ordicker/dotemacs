@@ -578,13 +578,6 @@ return to the last place on the save buffer
   (when *sys/linux*
     (setq explicit-shell-file-name "/bin/bash")))
 #+END_SRC
-** quickrun
-#+BEGIN_SRC emacs-lisp
-(use-package quickrun
-  :bind
-  (("<f5>" . quickrun)
-   ("M-<f5>" . quickrun-shell)))
-#+END_SRC
 ** vterm
 [[https://github.com/akermu/emacs-libvterm][github]]
 #+begin_src emacs-lisp
