@@ -388,6 +388,20 @@ return to the last place on the save buffer
   (highlight-indent-guides-delay 0)
   (highlight-indent-guides-auto-character-face-perc 7))
 #+END_SRC
+
+** RTL
+#+begin_src emacs-lisp
+  (defun change-direction ()
+    "Toggle RTL/LTR"
+    (interactive)
+    (if (eq bidi-paragraph-direction 'left-to-right)
+	(setq bidi-paragraph-direction 'right-to-left)
+      (setq bidi-paragraph-direction 'left-to-right)
+      )
+    )
+
+(global-set-key (kbd "<f12>") #'change-direction)
+#+end_src
 * Pass 
 #+BEGIN_SRC emacs-lisp
 (use-package password-store)
