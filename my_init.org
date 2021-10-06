@@ -282,6 +282,14 @@ return to the last place on the save buffer
 
   (setq marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil))
 )
+
+(use-package vertico
+  :init
+  (vertico-mode))
+
+(use-package savehist
+  :init
+  (savehist-mode))
 #+END_SRC
 ** IBuffer
 #+BEGIN_SRC emacs-lisp
