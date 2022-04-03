@@ -663,7 +663,12 @@ return to the last place on the save buffer
 sudo apt install auctex texlive-full
 #+BEGIN_SRC emacs-lisp
 (use-package tex
-    :ensure auctex)
+    :ensure auctex
+    :config (progn
+    (setq TeX-auto-save t)
+    (setq TeX-parse-self t)
+    (add-hook 'LaTeX-mode-hook 'turn-on-cdlatex)
+    ))
 #+END_SRC
 ** PDF Tools
 #+BEGIN_SRC emacs-lisp
