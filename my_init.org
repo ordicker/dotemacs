@@ -1,6 +1,7 @@
 * Notes 
 ** emacs configuration
 --prefix=/usr/local/stow/emacs-27.1 --with-x-toolkit=gtk --with-xwidgets --with-cairo --with-mailutils
+--prefix=/usr/local/stow/emacs-28.1 --with-x-toolkit=gtk3 --with-xwidgets --with-mailutils --with-modules --with-json --with-native-compilation
 ** fonts and icons 
 Run M-x all-the-icons-install-fonts
 
@@ -69,6 +70,7 @@ google-drive-ocamlfuse -label GalGalaim ~/GoogleDrive/
 (global-hl-line-mode 1)
 (setq split-height-threshold nil)
 (setq split-width-threshold 70)
+(setq native-comp-async-report-warnings-errors nil)
 #+END_SRC
 ** Key binding
 #+BEGIN_SRC emacs-lisp
@@ -509,39 +511,40 @@ return to the last place on the save buffer
 #+END_SRC
 * Org-mode stuff
 #+BEGIN_SRC emacs-lisp
-(use-package org-superstar
-      :hook (org-mode . org-superstar-mode))
+  (use-package org-superstar
+	:hook (org-mode . org-superstar-mode))
 
-(use-package ox-reveal
+  (use-package ox-reveal
+      :config
+      (require 'ox-reveal)
+      (setq org-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js")
+      (setq org-reveal-mathjax t))
+
+  (use-package htmlize)
+
+  (use-package org-gcal
+    :defer t
     :config
-    (require 'ox-reveal)
-    (setq org-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js")
-    (setq org-reveal-mathjax t))
+    (setq org-gcal-client-id (password-store-get "DevOps/gcal/client-id")
+	org-gcal-client-secret (password-store-get "DevOps/gcal/client-secret")
+	org-gcal-file-alist '(("or.dicker@gmail.com" .  "~/workspace/org/gcal.org"))))
 
-(use-package htmlize)
-
-(use-package org-gcal
-  :defer t
-  :config
-  (setq org-gcal-client-id (password-store-get "DevOps/gcal/client-id")
-      org-gcal-client-secret (password-store-get "DevOps/gcal/client-secret")
-      org-gcal-file-alist '(("or.dicker@gmail.com" .  "~/workspace/org/gcal.org"))))
-
-(use-package cdlatex
-    :config (add-hook 'org-mode-hook 'turn-on-org-cdlatex))
+  (use-package cdlatex
+      :config (add-hook 'org-mode-hook 'turn-on-org-cdlatex))
 
 
-;; org-babel
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '((latex     . t)
-   (python    . t)
-   (shell     . t)
-   (calc      . t)
-   (org       . t)))
+  ;; org-babel
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((latex     . t)
+     (python    . t)
+     (shell     . t)
+     (calc      . t)
+     (org       . t)
+     (octave    . t)))
 
-(setq org-babel-python-command "python3")
-(setq org-src-fontify-natively t)
+  (setq org-babel-python-command "python3")
+  (setq org-src-fontify-natively t)
 
 #+END_SRC
 * Projectile
@@ -628,20 +631,33 @@ return to the last place on the save buffer
 
 * Compeny
 #+BEGIN_SRC emacs-lisp
-(use-package company
+  (use-package company
+      :config
+      (setq company-idle-delay 0)
+      (setq company-minimum-prefix-length 3)
+
+      (global-company-mode t)
+  )
+
+  (use-package company-statistics         ; Sort company candidates by statistics
+    :defer t
     :config
-    (setq company-idle-delay 0)
-    (setq company-minimum-prefix-length 3)
+    (setq company-statistics-file (emacs-d "cache/company-statistics"))
+    (with-eval-after-load 'company
+      (company-statistics-mode)))
 
-    (global-company-mode t)
-)
+  (use-package company-math
+    :config
+    ;; global activation of the unicode symbol completion
+    (add-to-list 'company-backends 'company-math-symbols-unicode)
+    (setq company-math-disallow-unicode-symbols-in-faces nil)
+    ;; local configuration for TeX modes
+    (defun my/latex-mode-setup ()
+      (setq-local company-backends
+		  (append '(company-math-symbols-latex company-latex-commands)
+			  company-backends)))
 
-(use-package company-statistics         ; Sort company candidates by statistics
-  :defer t
-  :config
-  (setq company-statistics-file (emacs-d "cache/company-statistics"))
-  (with-eval-after-load 'company
-    (company-statistics-mode)))
+    (add-hook 'TeX-mode-hook 'my/latex-mode-setup))
 #+END_SRC
 * Shell 
 ** shell-here
@@ -668,6 +684,7 @@ sudo apt install auctex texlive-full
     (setq TeX-auto-save t)
     (setq TeX-parse-self t)
     (add-hook 'LaTeX-mode-hook 'turn-on-cdlatex)
+    (setq org-format-latex-options (plist-put org-format-latex-options :scale 2.0))
     ))
 #+END_SRC
 ** PDF Tools
@@ -733,10 +750,12 @@ $sudo apt-get install clangd-10
   :server-id 'clangd-remote)))
 
 ;;(setq lsp-log-io t) ; bug with lsp-mode and tramp
-(setq lsp-clients-clangd-args `("-j=2"
+ (setq lsp-clients-clangd-args `("-j=2"
                                 "--background-index"
                                 "--clang-tidy"
-				 "--completion-style=detailed"))
+				"--completion-style=detailed"
+				"--query-driver=/home/dicker/.platformio/packages/toolchain-atmelavr/bin/avr-g++"
+				"--compile-commands-dir=."))
 
 
 (use-package modern-cpp-font-lock
