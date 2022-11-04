@@ -1,6 +1,5 @@
 * Notes 
 ** emacs configuration
---prefix=/usr/local/stow/emacs-27.1 --with-x-toolkit=gtk --with-xwidgets --with-cairo --with-mailutils
 --prefix=/usr/local/stow/emacs-28.1 --with-x-toolkit=gtk3 --with-xwidgets --with-mailutils --with-modules --with-json --with-native-compilation
 ** fonts and icons 
 Run M-x all-the-icons-install-fonts
@@ -20,6 +19,11 @@ google-drive-ocamlfuse -label GalGalaim ~/GoogleDrive/
 
 (global-set-key (kbd "C-x i") #'edit-configs)
 #+END_SRC
+** emacs server (emacsclient)
+#+begin_src emacs-lisp
+  (server-start)
+#+end_src
+
 ** Constants
 #+BEGIN_SRC emacs-lisp
 (defconst *sys/gui*
@@ -256,7 +260,7 @@ return to the last place on the save buffer
   :config
   (editorconfig-mode 1))
 #+END_SRC
-** Embark/Selectrum/consult/ctrl-F
+** Embark/vertico/consult/ctrl-F
 #+BEGIN_SRC emacs-lisp 
 (use-package vertico
   :init
@@ -462,8 +466,8 @@ return to the last place on the save buffer
 
 (defun pass-pull-and-push-to-git ()
    (message "pull and push changes to git") 
-   (lambda () (password-store--run-git "pull")
-              (password-store--run-git "push")))
+   (lambda () (password-store--run-git "pull" "origin" "master")
+              (password-store--run-git "push" "origin" "master")))
 
 (use-package pass
   :after password-store
