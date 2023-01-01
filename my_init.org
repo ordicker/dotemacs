@@ -600,8 +600,8 @@ return to the last place on the save buffer
 #+BEGIN_SRC emacs-lisp
 (use-package smartparens
   :hook (prog-mode . smartparens-mode)
-  :bind (("C-c ) <right>" . sp-slurp-hybrid-sexp)
-         ("C-c ) <left>" . sp-forward-barf-sexp)
+  :bind (("C-) <right>" . sp-slurp-hybrid-sexp)
+         ("C-) <left>" . sp-forward-barf-sexp)
   )
   :custom
   (sp-escape-quotes-after-insert nil)
@@ -715,7 +715,7 @@ sudo apt install auctex texlive-full
 
 (use-package lsp-julia
   :config
-  (setq lsp-julia-default-environment "~/.julia/environments/v1.6"))
+  (setq lsp-julia-default-environment "~/.julia/environments/v1.8"))
 
 #+END_SRC
 * Python 
