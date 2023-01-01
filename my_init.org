@@ -800,8 +800,8 @@ $sudo apt-get install clangd-10
 * OpenSCAD
 $sudo apt-get install openscad
 #+begin_src emacs-lisp
-(use-package scad-mode)
-(use-package scad-preview)
+;;(use-package scad-mode)
+;;(use-package scad-preview)
 #+end_src
 
 * Tree-sitter
