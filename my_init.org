@@ -152,38 +152,38 @@ Bootstrap use-package
 #+END_SRC
 ** Theme
 #+BEGIN_SRC emacs-lisp 
-(set-language-environment "UTF-8")
-;(setq default-frame-alist '((font . "DejaVu Sans Mono-16")))
-(setq default-frame-alist '((font . "Hack-16")))
-(tool-bar-mode -1)
-(menu-bar-mode -1)
+  (set-language-environment "UTF-8")
+  ;(setq default-frame-alist '((font . "DejaVu Sans Mono-16")))
+  (setq default-frame-alist '((font . "Hack-16")))
+  (tool-bar-mode -1)
+  (menu-bar-mode -1)
 
-(use-package solarized-theme)
+  (use-package solarized-theme)
 
-(use-package heaven-and-hell
-  :ensure t
-  :init
-  (setq heaven-and-hell-themes
-        '((light . solarized-light)
-          (dark . solarized-dark)))
-  ;; Optionall, load themes without asking for confirmation.
-  (setq heaven-and-hell-load-theme-no-confirm t)
-  :hook (after-init . heaven-and-hell-init-hook)
-  :bind ("<f6>" . heaven-and-hell-toggle-theme))
+  (use-package heaven-and-hell
+    :ensure t
+    :init
+    (setq heaven-and-hell-themes
+	  '((light . solarized-light)
+	    (dark . solarized-dark)))
+    ;; Optionall, load themes without asking for confirmation.
+    (setq heaven-and-hell-load-theme-no-confirm t)
+    :hook (after-init . heaven-and-hell-init-hook)
+    :bind ("<f6>" . heaven-and-hell-toggle-theme))
 
-;; modeline
-;; This package requires the fonts included with all-the-icons to be installed. Run M-x all-the-icons-install-fonts to do so.
-(use-package doom-modeline
-  :custom 
-  (inhibit-compacting-font-caches t)
-  ;;(doom-modeline-minor-modes t)
-  (doom-modeline-icon t)
-  (doom-modeline-major-mode-color-icon t)
-  (doom-modeline-height 15)
-  :hook (after-init . doom-modeline-mode)
-  :config 
-  (setq doom-modeline-project-detection 'project)
-)
+  ;; modeline
+  ;; This package is able to display icons if nerd-icons package and required fonts are installed. Run M-x nerd-icons-install-fonts to install the necessary fonts. Please refer to the installation guide.
+  (use-package doom-modeline
+    :custom 
+    (inhibit-compacting-font-caches t)
+    ;;(doom-modeline-minor-modes t)
+    (doom-modeline-icon t)
+    (doom-modeline-major-mode-color-icon t)
+    (doom-modeline-height 15)
+    :hook (after-init . doom-modeline-mode)
+    :config 
+    (setq doom-modeline-project-detection 'project)
+  )
 
 #+END_SRC
  
@@ -523,41 +523,52 @@ return to the last place on the save buffer
 #+END_SRC
 * Org-mode stuff
 #+BEGIN_SRC emacs-lisp
-  (use-package org-superstar
-	:hook (org-mode . org-superstar-mode))
+      (use-package org-superstar
+	    :hook (org-mode . org-superstar-mode))
 
-  (use-package ox-reveal
-      :config
-      (require 'ox-reveal)
-      (setq org-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js")
-      (setq org-reveal-mathjax t))
+      (use-package ox-reveal
+	  :config
+	  (require 'ox-reveal)
+	  (setq org-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js")
+	  (setq org-reveal-mathjax t))
 
-  (use-package htmlize)
+      (use-package htmlize)
 
-  (use-package org-gcal
-    :defer t
-    :config
-    (setq org-gcal-client-id (password-store-get "DevOps/gcal/client-id")
-	org-gcal-client-secret (password-store-get "DevOps/gcal/client-secret")
-	org-gcal-file-alist '(("or.dicker@gmail.com" .  "~/workspace/org/gcal.org"))))
+      (use-package org-gcal
+	:defer t
+	:config
+	(setq org-gcal-client-id (password-store-get "DevOps/gcal/client-id")
+	    org-gcal-client-secret (password-store-get "DevOps/gcal/client-secret")
+	    org-gcal-file-alist '(("or.dicker@gmail.com" .  "~/workspace/org/gcal.org"))))
 
-  (use-package cdlatex
-      :config (add-hook 'org-mode-hook 'turn-on-org-cdlatex))
+      (use-package cdlatex
+	  :config (add-hook 'org-mode-hook 'turn-on-org-cdlatex))
 
 
-  ;; org-babel
+      ;; org-babel
   (org-babel-do-load-languages
    'org-babel-load-languages
-   '((latex     . t)
-     (python    . t)
-     (shell     . t)
-     (calc      . t)
-     (org       . t)
-     (octave    . t)))
+   '((latex       . t)
+     (python      . t)
+     (shell       . t)
+     (calc        . t)
+     (org         . t)
+     (octave      . t)
+     (julia-vterm . t)))
 
   (setq org-babel-python-command "python3")
   (setq org-src-fontify-natively t)
 
+  ;; julia-vterm babel setup
+  (use-package ob-julia-vterm)
+  (use-package julia-vterm)
+  (defalias 'org-babel-execute:julia 'org-babel-execute:julia-vterm)
+  (defalias 'org-babel-variable-assignments:julia 'org-babel-variable-assignments:julia-vterm)
+
+  ;; inline preview
+  (use-package org-inline-pdf
+    :config
+    (add-hook 'org-mode-hook #'org-inline-pdf-mode))
 #+END_SRC
 * Projectile
 #+BEGIN_SRC emacs-lisp 
@@ -587,17 +598,24 @@ return to the last place on the save buffer
 
 * Snippet
 #+BEGIN_SRC emacs-lisp
-(use-package yasnippet
-  :init
-  (yas-global-mode 1))
+  (use-package yasnippet
+    :init
+    (yas-global-mode 1))
 
-(use-package yasnippet-snippets)
-(use-package yasnippet-classic-snippets)
+  (defun my-org-latex-yas ()
+    "Activate org and LaTeX yas expansion in org-mode buffers."
+    (yas-minor-mode)
+    (yas-activate-extra-mode 'latex-mode))
 
-(use-package auto-yasnippet
-  :commands (aya-create aya-expand)
-  :bind (("C-c ~" . aya-create)
-         ("C-c C-~" . aya-expand)))
+  (add-hook 'org-mode-hook #'my-org-latex-yas)
+
+  (use-package yasnippet-snippets)
+  (use-package yasnippet-classic-snippets)
+
+  (use-package auto-yasnippet
+    :commands (aya-create aya-expand)
+    :bind (("C-c ~" . aya-create)
+	   ("C-c C-~" . aya-expand)))
 #+END_SRC
 * Expand-region
 #+BEGIN_SRC emacs-lisp 
@@ -643,7 +661,15 @@ return to the last place on the save buffer
 
 * Eglot
 #+begin_src emacs-lisp
-  (use-package eglot)
+  (use-package eglot
+  :config
+  (add-to-list 'eglot-server-programs '(python-mode . ("pyright")))
+
+  (setq-default eglot-workspace-configuration
+                '((:pylsp . (:configurationSources ["flake8"] :plugins (:pycodestyle (:enabled nil) :mccabe (:enabled nil) :flake8 (:enabled t))))))
+
+  :hook
+  ((python-mode . eglot-ensure)))
 #+end_src
 
 * Compeny
@@ -721,15 +747,22 @@ sudo apt install auctex texlive-full
 #+END_SRC
 * Julia
 #+BEGIN_SRC emacs-lisp
-  (use-package julia-mode
-     :defer t
-     :commands julia-mode
-     :mode ("\\.jl$" . julia-mode))
+    (use-package julia-mode
+      :defer t
+      :commands julia-mode
+      :mode ("\\.jl$" . julia-mode))
 
-(use-package eglot-jl)
-  ;;(use-package lsp-julia
-  ;;  :config
-  ;;  (setq lsp-julia-default-environment "~/.julia/environments/v1.8"))
+    ;; for julia-babel and ploting
+    ;; alias julia-org="julia -q -J<path-to-sysimage>"
+    (use-package julia-vterm
+      :config
+      (setq julia-vterm-repl-program
+	    "julia -q -J/home/dicker/workspace/julia-org/JuliaOrgSysimage.so --project=/home/dicker/workspace/julia-org"))
+
+    (use-package eglot-jl)
+      ;;(use-package lsp-julia
+      ;;  :config
+      ;;  (setq lsp-julia-default-environment "~/.julia/environments/v1.8"))
 
 #+END_SRC
 * Python 
@@ -738,21 +771,26 @@ to install that
 $ sudo npm install n -g
 $ sudo n stable
 #+BEGIN_SRC emacs-lisp
-;;(add-to-list 'exec-path "~/anaconda3/bin/")
-(use-package virtualenv)
+  ;;(add-to-list 'exec-path "~/anaconda3/bin/")
+  (use-package virtualenv)
 
-(use-package python-mode
-  :after flycheck
-  :mode "\\.py\\'"
-  :custom
-  (python-indent-offset 4)
-  (flycheck-python-pycompile-executable "python3")
-  (python-shell-interpreter "python3"))
+  (use-package python-mode
+    :after flycheck
+    :mode "\\.py\\'"
+    :custom
+    (python-indent-offset 4)
+    (flycheck-python-pycompile-executable "python3")
+    (python-shell-interpreter "python3"))
 
-(use-package lsp-pyright
-  :hook (python-mode . (lambda () (require 'lsp-pyright)))
-  :init (when (executable-find "python3")
-          (setq lsp-pyright-python-executable-cmd "python3")))
+  ;;(use-package lsp-pyright
+  ;;  :hook (python-mode . (lambda () (require 'lsp-pyright)))
+  ;;  :init (when (executable-find "python3")
+  ;;          (setq lsp-pyright-python-executable-cmd "python3")))
+  ;;(use-package code-cells
+  ;;  :custom
+  ;;  (code-cells-convert-ipynb-style '(("pandoc" "--to" "ipynb" "--from" "org")
+  ;; 				      ("pandoc" "--to" "org" "--from" "ipynb")
+  ;; 				      org-mode)))
 #+END_SRC
 * C/C++/CUDA
 install clangd 
@@ -851,3 +889,12 @@ $sudo apt-get install openscad
 ;; 	 :post-insert-hook (prettier-prettify)
 ;; 	 :msg-format-template "\"Debug: %s\"")
 #+end_src
+
+* Fun
+** vimgolf
+** exercism
+#+begin_src emacs-lisp
+;;(use-package exercism)
+#+end_src
+
+writing some text with mis takes to test how languagetool work
