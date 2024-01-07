@@ -1,6 +1,6 @@
 * Notes 
 ** emacs configuration
---prefix=/usr/local/stow/emacs-28.1 --with-x-toolkit=gtk3 --with-xwidgets --with-mailutils --with-modules --with-json --with-native-compilation
+--prefix=/usr/local/stow/emacs-29.1 --with-x --with-xwidgets --with-mailutils --with-modules --with-json --with-native-compilation=aot --with-tree-sitter --with-imagemagick
 ** fonts and icons 
 Run M-x all-the-icons-install-fonts
 
@@ -152,7 +152,9 @@ Bootstrap use-package
 #+END_SRC
 ** Theme
 #+BEGIN_SRC emacs-lisp 
-  (set-language-environment "UTF-8")
+  ;;(set-language-environment "UTF-8")
+  (set-charset-priority 'unicode)
+  (prefer-coding-system 'utf-8-unix)
   ;(setq default-frame-alist '((font . "DejaVu Sans Mono-16")))
   (setq default-frame-alist '((font . "Hack-16")))
   (tool-bar-mode -1)
@@ -523,52 +525,54 @@ return to the last place on the save buffer
 #+END_SRC
 * Org-mode stuff
 #+BEGIN_SRC emacs-lisp
-      (use-package org-superstar
-	    :hook (org-mode . org-superstar-mode))
+  (use-package org-superstar
+    :hook (org-mode . org-superstar-mode))
 
-      (use-package ox-reveal
-	  :config
-	  (require 'ox-reveal)
-	  (setq org-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js")
-	  (setq org-reveal-mathjax t))
+	;(use-package ox-reveal
+	; 	  :config
+	; 	  (require 'ox-reveal)
+	; 	  (setq org-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js")
+	; 	  (setq org-reveal-mathjax t))
 
-      (use-package htmlize)
+  (use-package org-re-reveal)
+  
+  (use-package htmlize)
 
-      (use-package org-gcal
-	:defer t
-	:config
-	(setq org-gcal-client-id (password-store-get "DevOps/gcal/client-id")
-	    org-gcal-client-secret (password-store-get "DevOps/gcal/client-secret")
-	    org-gcal-file-alist '(("or.dicker@gmail.com" .  "~/workspace/org/gcal.org"))))
-
-      (use-package cdlatex
-	  :config (add-hook 'org-mode-hook 'turn-on-org-cdlatex))
-
-
-      ;; org-babel
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((latex       . t)
-     (python      . t)
-     (shell       . t)
-     (calc        . t)
-     (org         . t)
-     (octave      . t)
-     (julia-vterm . t)))
-
-  (setq org-babel-python-command "python3")
-  (setq org-src-fontify-natively t)
-
-  ;; julia-vterm babel setup
-  (use-package ob-julia-vterm)
-  (use-package julia-vterm)
-  (defalias 'org-babel-execute:julia 'org-babel-execute:julia-vterm)
-  (defalias 'org-babel-variable-assignments:julia 'org-babel-variable-assignments:julia-vterm)
-
-  ;; inline preview
-  (use-package org-inline-pdf
+  (use-package org-gcal
+    :defer t
     :config
-    (add-hook 'org-mode-hook #'org-inline-pdf-mode))
+    (setq org-gcal-client-id (password-store-get "DevOps/gcal/client-id")
+	  org-gcal-client-secret (password-store-get "DevOps/gcal/client-secret")
+	  org-gcal-file-alist '(("or.dicker@gmail.com" .  "~/workspace/org/gcal.org"))))
+
+  (use-package cdlatex
+    :config (add-hook 'org-mode-hook 'turn-on-org-cdlatex))
+
+
+	;; org-babel
+    (org-babel-do-load-languages
+     'org-babel-load-languages
+     '((latex       . t)
+       (python      . t)
+       (shell       . t)
+       (calc        . t)
+       (org         . t)
+       (octave      . t)
+       (julia-vterm . t)))
+
+    (setq org-babel-python-command "python3")
+    (setq org-src-fontify-natively t)
+
+    ;; julia-vterm babel setup
+    (use-package ob-julia-vterm)
+    (use-package julia-vterm)
+    (defalias 'org-babel-execute:julia 'org-babel-execute:julia-vterm)
+    (defalias 'org-babel-variable-assignments:julia 'org-babel-variable-assignments:julia-vterm)
+
+    ;; inline preview
+    (use-package org-inline-pdf
+      :config
+      (add-hook 'org-mode-hook #'org-inline-pdf-mode))
 #+END_SRC
 * Projectile
 #+BEGIN_SRC emacs-lisp 
@@ -636,29 +640,6 @@ return to the last place on the save buffer
   (show-paren-mode t)
 )
 #+END_SRC
-* lsp-mode
-#+BEGIN_SRC emacs-lisp
-;;(use-package lsp-mode
-;;  :commands lsp
-;;  :init
-;;  (setq lsp-auto-guess-root nil)
-;;  (setq lsp-prefer-flymake nil) ; Use flycheck instead of flymake
-;;  (setq lsp-file-watch-threshold 10000)
-;;  (setq read-process-output-max (* 2 1024 1024))
-;;  (setq lsp-eldoc-hook nil)
-;;  (setq lsp-idle-delay 0.500)
-;;  :bind (:map lsp-mode-map ("C-c C-f" . lsp-format-buffer))
-;;  :hook ((julia-mode python-mode c-mode c++-mode cuda-mode) . lsp)) 
-;; 
-;;(use-package lsp-ui 
-;;   :init
-;;   (setq lsp-eldoc-enable-hover nil)
-;;   (setq lsp-signature-auto-activate nil)
-;;   (setq lsp-signature-render-documentation nil)
-;;   (setq lsp-ui-doc-show-with-cursor nil)
-;;   :commands lsp-ui-mode)
-#+END_SRC
-
 * Eglot
 #+begin_src emacs-lisp
   (use-package eglot
@@ -765,6 +746,42 @@ sudo apt install auctex texlive-full
       ;;  (setq lsp-julia-default-environment "~/.julia/environments/v1.8"))
 
 #+END_SRC
+* Verilog
+#+begin_src emacs-lisp
+  (use-package verilog-mode
+    :defer t
+    :commands verilog-mode
+    :mode ("\\.s?vh?$" . verilog-mode))
+
+  (use-package verilog-ts-mode)
+  (use-package verilog-ext
+    :hook ((verilog-mode . verilog-ext-mode))
+    :init
+    ;; Can also be set through `M-x RET customize-group RET verilog-ext':
+    ;; Comment out/remove the ones you do not need
+    (setq verilog-ext-feature-list
+	  '(font-lock
+	    xref
+	    capf
+	    hierarchy
+	    eglot
+	    flycheck
+	    beautify
+	    navigation
+	    template
+	    formatter
+	    compilation
+	    imenu
+	    which-func
+	    hideshow
+	    typedefs
+	    time-stamp
+	    block-end-comments
+	    ports))
+    :config
+    (verilog-ext-mode-setup))
+#+end_src
+
 * Python 
 pyright need node version> 12.0.0
 to install that 
@@ -782,15 +799,6 @@ $ sudo n stable
     (flycheck-python-pycompile-executable "python3")
     (python-shell-interpreter "python3"))
 
-  ;;(use-package lsp-pyright
-  ;;  :hook (python-mode . (lambda () (require 'lsp-pyright)))
-  ;;  :init (when (executable-find "python3")
-  ;;          (setq lsp-pyright-python-executable-cmd "python3")))
-  ;;(use-package code-cells
-  ;;  :custom
-  ;;  (code-cells-convert-ipynb-style '(("pandoc" "--to" "ipynb" "--from" "org")
-  ;; 				      ("pandoc" "--to" "org" "--from" "ipynb")
-  ;; 				      org-mode)))
 #+END_SRC
 * C/C++/CUDA
 install clangd 
@@ -858,36 +866,35 @@ $sudo apt-get install openscad
 
 * Tree-sitter
 #+begin_src emacs-lisp
-;;  (use-package quelpa)
-;;  (use-package quelpa-use-package)
-;;  (use-package tree-sitter-langs
-;;    :ensure t
-;;    :defer t)
-;; 
-;;  (use-package tree-sitter
-;;    :ensure t
-;;    :after tree-sitter-langs)
-;; 
-;;  (use-package turbo-log
-;;    :quelpa (turbo-log :fetcher github :repo "artawower/turbo-log.el")
-;;    :bind (("C-S-l" . turbo-log-print)
-;; 	   ("C-S-i" . turbo-log-print-immediately)
-;; 	   ("C-S-h" . turbo-log-comment-all-logs)
-;; 	   ("C-S-s" . turbo-log-uncomment-all-logs)
-;; 	   ("C-S-[" . turbo-log-paste-as-logger)
-;; 	   ("C-S-]" . turbo-log-paste-as-logger-immediately)
-;; 	   ("C-S-d" . turbo-log-delete-all-logs))
-;;    :config
-;;       (setq turbo-log-msg-format-template "\"🚀: %s\"")
-;;       (setq turbo-log-allow-insert-without-tree-sitter-p t))
-;;  (turbo-log-configure
-;; 	 :modes (julia-mode)
-;; 	 :strategy merge
-;; 	 :loggers ("println(%s)")
-;; 	 :jump-list ((class_declaration (method_definition "constructor")))
-;; 	 :identifier-node-types (identifier member_expression)
-;; 	 :post-insert-hook (prettier-prettify)
-;; 	 :msg-format-template "\"Debug: %s\"")
+  (use-package tree-sitter-langs)
+  (use-package tree-sitter
+    :ensure t
+    :after tree-sitter-langs)
+
+  (use-package treesit-auto
+    :config
+    (global-treesit-auto-mode))
+  
+    ;;  (use-package turbo-log
+    ;;    :quelpa (turbo-log :fetcher github :repo "artawower/turbo-log.el")
+    ;;    :bind (("C-S-l" . turbo-log-print)
+    ;; 	   ("C-S-i" . turbo-log-print-immediately)
+    ;; 	   ("C-S-h" . turbo-log-comment-all-logs)
+    ;; 	   ("C-S-s" . turbo-log-uncomment-all-logs)
+    ;; 	   ("C-S-[" . turbo-log-paste-as-logger)
+    ;; 	   ("C-S-]" . turbo-log-paste-as-logger-immediately)
+    ;; 	   ("C-S-d" . turbo-log-delete-all-logs))
+    ;;    :config
+    ;;       (setq turbo-log-msg-format-template "\"🚀: %s\"")
+    ;;       (setq turbo-log-allow-insert-without-tree-sitter-p t))
+    ;;  (turbo-log-configure
+    ;; 	 :modes (julia-mode)
+    ;; 	 :strategy merge
+    ;; 	 :loggers ("println(%s)")
+    ;; 	 :jump-list ((class_declaration (method_definition "constructor")))
+    ;; 	 :identifier-node-types (identifier member_expression)
+    ;; 	 :post-insert-hook (prettier-prettify)
+    ;; 	 :msg-format-template "\"Debug: %s\"")
 #+end_src
 
 * Fun
