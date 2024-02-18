@@ -642,15 +642,16 @@ return to the last place on the save buffer
 #+END_SRC
 * Eglot
 #+begin_src emacs-lisp
-  (use-package eglot
-  :config
-  (add-to-list 'eglot-server-programs '(python-mode . ("pyright")))
-
-  (setq-default eglot-workspace-configuration
-                '((:pylsp . (:configurationSources ["flake8"] :plugins (:pycodestyle (:enabled nil) :mccabe (:enabled nil) :flake8 (:enabled t))))))
-
-  :hook
-  ((python-mode . eglot-ensure)))
+;;    (use-package eglot
+;;    ;;:config
+;;    ;;(add-to-list 'eglot-server-programs '(python-mode . ("pyright")))
+;;    ;; 
+;;    ;;(setq-default eglot-workspace-configuration
+;;    ;;              '((:pylsp . (:configurationSources ["flake8"] :plugins (:pycodestyle (:enabled nil) :mccabe (:enabled nil) :flake8 (:enabled t))))))
+;; 
+;;    :hook
+;;    ((python-mode . eglot-ensure)
+;;     (python-ts-mode . eglot-ensure)))
 #+end_src
 
 * Compeny
@@ -740,7 +741,7 @@ sudo apt install auctex texlive-full
       (setq julia-vterm-repl-program
 	    "julia -q -J/home/dicker/workspace/julia-org/JuliaOrgSysimage.so --project=/home/dicker/workspace/julia-org"))
 
-    (use-package eglot-jl)
+    ;;(use-package eglot-jl)
       ;;(use-package lsp-julia
       ;;  :config
       ;;  (setq lsp-julia-default-environment "~/.julia/environments/v1.8"))
@@ -789,7 +790,12 @@ $ sudo npm install n -g
 $ sudo n stable
 #+BEGIN_SRC emacs-lisp
   ;;(add-to-list 'exec-path "~/anaconda3/bin/")
-  (use-package virtualenv)
+  ;;(use-package virtualenv)
+  (use-package conda
+    :init
+    (setq conda-anaconda-home (expand-file-name "~/anaconda3/"))
+    (setq conda-env-home-directory (expand-file-name "~/.virtualenvs/"))
+  )
 
   (use-package python-mode
     :after flycheck
