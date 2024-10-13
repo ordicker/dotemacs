@@ -907,7 +907,10 @@ $sudo apt-get install openscad
 ** vimgolf
 ** exercism
 #+begin_src emacs-lisp
-;;(use-package exercism)
+  (use-package exercism)
+#+end_src
+** leetcode
+#+begin_src emacs-lisp
+  (use-package leetcode)
 #+end_src
 
-writing some text with mis takes to test how languagetool work
