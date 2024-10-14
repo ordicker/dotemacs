@@ -642,16 +642,19 @@ return to the last place on the save buffer
 #+END_SRC
 * Eglot
 #+begin_src emacs-lisp
-;;    (use-package eglot
-;;    ;;:config
-;;    ;;(add-to-list 'eglot-server-programs '(python-mode . ("pyright")))
-;;    ;; 
-;;    ;;(setq-default eglot-workspace-configuration
-;;    ;;              '((:pylsp . (:configurationSources ["flake8"] :plugins (:pycodestyle (:enabled nil) :mccabe (:enabled nil) :flake8 (:enabled t))))))
-;; 
-;;    :hook
-;;    ((python-mode . eglot-ensure)
-;;     (python-ts-mode . eglot-ensure)))
+  (use-package eglot
+   :config
+  (add-to-list 'eglot-server-programs '((c-mode c-ts-mode c++-mode c++-ts-mode objc-mode)
+					"clangd-12" "-j=2"
+					"--background-index"
+					"--clang-tidy"
+					"--completion-style=detailed"
+					"--query-driver=/home/dicker/.platformio/packages/toolchain-atmelavr/bin/avr-g++"
+					"--compile-commands-dir=."))
+  :hook
+  ((python-mode . eglot-ensure)
+   (c-mode . eglot-ensure)
+   (c++-mode . eglot-ensure)))
 #+end_src
 
 * Compeny
@@ -749,38 +752,38 @@ sudo apt install auctex texlive-full
 #+END_SRC
 * Verilog
 #+begin_src emacs-lisp
-  (use-package verilog-mode
-    :defer t
-    :commands verilog-mode
-    :mode ("\\.s?vh?$" . verilog-mode))
-
-  (use-package verilog-ts-mode)
-  (use-package verilog-ext
-    :hook ((verilog-mode . verilog-ext-mode))
-    :init
-    ;; Can also be set through `M-x RET customize-group RET verilog-ext':
-    ;; Comment out/remove the ones you do not need
-    (setq verilog-ext-feature-list
-	  '(font-lock
-	    xref
-	    capf
-	    hierarchy
-	    eglot
-	    flycheck
-	    beautify
-	    navigation
-	    template
-	    formatter
-	    compilation
-	    imenu
-	    which-func
-	    hideshow
-	    typedefs
-	    time-stamp
-	    block-end-comments
-	    ports))
-    :config
-    (verilog-ext-mode-setup))
+;;  (use-package verilog-mode
+;;    :defer t
+;;    :commands verilog-mode
+;;    :mode ("\\.s?vh?$" . verilog-mode))
+;; 
+;;  (use-package verilog-ts-mode)
+;;  (use-package verilog-ext
+;;    :hook ((verilog-mode . verilog-ext-mode))
+;;    :init
+;;    ;; Can also be set through `M-x RET customize-group RET verilog-ext':
+;;    ;; Comment out/remove the ones you do not need
+;;    (setq verilog-ext-feature-list
+;; 	  '(font-lock
+;; 	    xref
+;; 	    capf
+;; 	    hierarchy
+;; 	    eglot
+;; 	    flycheck
+;; 	    beautify
+;; 	    navigation
+;; 	    template
+;; 	    formatter
+;; 	    compilation
+;; 	    imenu
+;; 	    which-func
+;; 	    hideshow
+;; 	    typedefs
+;; 	    time-stamp
+;; 	    block-end-comments
+;; 	    ports))
+;;    :config
+;;    (verilog-ext-mode-setup))
 #+end_src
 
 * Python 
@@ -805,34 +808,25 @@ $ sudo n stable
     (flycheck-python-pycompile-executable "python3")
     (python-shell-interpreter "python3"))
 
+  (use-package poetry
+    :hook
+    (python-mode . poetry-tracking-mode))
+
 #+END_SRC
 * C/C++/CUDA
 install clangd 
-$sudo apt-get install clangd-10
+#+begin_src bash
+$sudo apt-get install clangd-12  
+#+end_src
+
 #+BEGIN_SRC emacs-lisp
 (setq-default c-basic-offset 4)
-;; TRAMP support 
-;;(with-eval-after-load 'lsp-mode (lsp-register-client
-;;(make-lsp-client
-;;  :new-connection (lsp-tramp-connection "clangd-10")
-;;  :major-modes '(c-mode c++-mode cuda-mode)
-;;  :remote? t
-;;  :server-id 'clangd-remote)))
-;; 
-;;;;(setq lsp-log-io t) ; bug with lsp-mode and tramp
-;; (setq lsp-clients-clangd-args `("-j=2"
-;;                                "--background-index"
-;;                                "--clang-tidy"
-;; 				"--completion-style=detailed"
-;; 				"--query-driver=/home/dicker/.platformio/packages/toolchain-atmelavr/bin/avr-g++"
-;; 				"--compile-commands-dir=."))
-
 
 (use-package modern-cpp-font-lock
   :diminish t
   :init (modern-c++-font-lock-global-mode t))
 
-(use-package cuda-mode)
+;;(use-package cuda-mode)
 
 ;;; cmake
 (use-package cmake-mode)
@@ -911,6 +905,10 @@ $sudo apt-get install openscad
 #+end_src
 ** leetcode
 #+begin_src emacs-lisp
-  (use-package leetcode)
+  (use-package leetcode
+    :custom
+    (leetcode-prefer-language "python3")
+    (leetcode-save-solutions t)
+    (leetcode-directory "~/workspace/leetcode"))
 #+end_src
 
