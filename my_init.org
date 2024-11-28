@@ -649,7 +649,7 @@ return to the last place on the save buffer
 					"--background-index"
 					"--clang-tidy"
 					"--completion-style=detailed"
-					"--query-driver=/home/dicker/.platformio/packages/toolchain-atmelavr/bin/avr-g++"
+					"--query-driver=/home/dicker/.platformio/packages/toolchain-xtensa-esp32/bin/xtensa-esp32-elf-g++"
 					"--compile-commands-dir=."))
   :hook
   ((python-mode . eglot-ensure)
@@ -873,6 +873,7 @@ $sudo apt-get install openscad
 
   (use-package treesit-auto
     :config
+    (treesit-auto-add-to-auto-mode-alist 'all)
     (global-treesit-auto-mode))
   
     ;;  (use-package turbo-log
