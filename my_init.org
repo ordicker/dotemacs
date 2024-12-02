@@ -69,13 +69,82 @@ google-drive-ocamlfuse -label GalGalaim ~/GoogleDrive/
 (blink-cursor-mode -1)
 (setq-default cursor-type 'bar)
 (global-auto-revert-mode t)
-(delete-selection-mode 1)
+(use-package delsel
+  :ensure nil
+  :hook (after-init . delete-selection-mode))
 (cua-selection-mode 1)
 (global-hl-line-mode 1)
 (setq split-height-threshold nil)
 (setq split-width-threshold 70)
 (setq native-comp-async-report-warnings-errors nil)
+
+  
+(defun prot/keyboard-quit-dwim ()
+  "Do-What-I-Mean behaviour for a general `keyboard-quit'.
+
+The generic `keyboard-quit' does not do the expected thing when
+the minibuffer is open.  Whereas we want it to close the
+minibuffer, even without explicitly focusing it.
+
+The DWIM behaviour of this command is as follows:
+
+- When the region is active, disable it.
+- When a minibuffer is open, but not focused, close the minibuffer.
+- When the Completions buffer is selected, close it.
+- In every other case use the regular `keyboard-quit'."
+  (interactive)
+  (cond
+   ((region-active-p)
+    (keyboard-quit))
+   ((derived-mode-p 'completion-list-mode)
+    (delete-completion-window))
+   ((> (minibuffer-depth) 0)
+    (abort-recursive-edit))
+   (t
+    (keyboard-quit))))
+
+(define-key global-map (kbd "C-g") #'prot/keyboard-quit-dwim)
+
 #+END_SRC
+** Dired
+#+begin_src emacs-lisp
+  (use-package dired
+    :ensure nil
+    :commands (dired)
+    :hook
+    ((dired-mode . dired-hide-details-mode)
+     (dired-mode . hl-line-mode))
+    :config
+    (setq dired-recursive-copies 'always)
+    (setq dired-recursive-deletes 'always)
+    (setq delete-by-moving-to-trash t)
+    (setq dired-dwim-target t))
+
+
+
+  (use-package dired-subtree
+    :ensure t
+    :after dired
+    :bind
+    ( :map dired-mode-map
+      ("<tab>" . dired-subtree-toggle)
+      ("TAB" . dired-subtree-toggle)
+      ("<backtab>" . dired-subtree-remove)
+      ("S-TAB" . dired-subtree-remove))
+    :config
+    (setq dired-subtree-use-backgrounds nil))
+
+  (use-package trashed
+    :ensure t
+    :commands (trashed)
+    :config
+    (setq trashed-action-confirmer 'y-or-n-p)
+    (setq trashed-use-header-line t)
+    (setq trashed-sort-key '("Date deleted" . t))
+    (setq trashed-date-format "%Y-%m-%d %H:%M:%S"))
+
+#+end_src
+
 ** Key binding
 #+BEGIN_SRC emacs-lisp
 ;; Unbind unneeded keys
@@ -125,23 +194,28 @@ If you experience freezing, decrease this.  If you experience stuttering, increa
 Bootstrap use-package
 
 #+BEGIN_SRC emacs-lisp 
-(setq load-prefer-newer t)              ; Don't load outdated byte code
+  (setq load-prefer-newer t)		; Don't load outdated byte code
 
-(setq use-package-always-ensure t)
-(require 'package)
-(add-to-list 'package-archives
-             '("melpa" . "https://melpa.org/packages/") t)
-(package-initialize)
+  (setq use-package-always-ensure t)
+  (require 'package)
+  (add-to-list 'package-archives
+	 '("melpa" . "https://melpa.org/packages/") t)
+  (package-initialize)
 
-;; Bootstrap 'use-package'
-(eval-after-load 'gnutls
-  '(add-to-list 'gnutls-trustfiles "/etc/ssl/cert.pem"))
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-(eval-when-compile
-  (require 'use-package))
-  (require 'bind-key)
+  (add-to-list 'display-buffer-alist
+	     '("\\`\\*\\(Warnings\\|Compile-Log\\)\\*\\'"
+	       (display-buffer-no-window)
+	       (allow-no-window . t)))
+
+  ;; Bootstrap 'use-package'
+  (eval-after-load 'gnutls
+    '(add-to-list 'gnutls-trustfiles "/etc/ssl/cert.pem"))
+  (unless (package-installed-p 'use-package)
+    (package-refresh-contents)
+    (package-install 'use-package))
+  (eval-when-compile
+    (require 'use-package))
+    (require 'bind-key)
   (setq use-package-always-ensure t)
 #+END_SRC
 
@@ -152,11 +226,18 @@ Bootstrap use-package
 #+END_SRC
 ** Theme
 #+BEGIN_SRC emacs-lisp 
+  (let ((mono-spaced-font "Monospace")
+      (proportionately-spaced-font "Sans"))
+  (set-face-attribute 'default nil :family mono-spaced-font :height 100)
+  (set-face-attribute 'fixed-pitch nil :family mono-spaced-font :height 1.0)
+  (set-face-attribute 'variable-pitch nil :family proportionately-spaced-font :height 1.0))
+
   ;;(set-language-environment "UTF-8")
-  (set-charset-priority 'unicode)
-  (prefer-coding-system 'utf-8-unix)
+  ;;(set-charset-priority 'unicode)
+  ;;(prefer-coding-system 'utf-8-unix)
   ;(setq default-frame-alist '((font . "DejaVu Sans Mono-16")))
   (setq default-frame-alist '((font . "Hack-16")))
+  
   (tool-bar-mode -1)
   (menu-bar-mode -1)
 
@@ -172,9 +253,7 @@ Bootstrap use-package
     (setq heaven-and-hell-load-theme-no-confirm t)
     :hook (after-init . heaven-and-hell-init-hook)
     :bind ("<f6>" . heaven-and-hell-toggle-theme))
-
   ;; modeline
-  ;; This package is able to display icons if nerd-icons package and required fonts are installed. Run M-x nerd-icons-install-fonts to install the necessary fonts. Please refer to the installation guide.
   (use-package doom-modeline
     :custom 
     (inhibit-compacting-font-caches t)
@@ -265,91 +344,103 @@ return to the last place on the save buffer
 #+END_SRC
 ** Embark/vertico/consult/ctrl-F
 #+BEGIN_SRC emacs-lisp 
-(use-package vertico
-  :init
-  (vertico-mode))
+  (use-package emacs
+    :init
+    ;; Add prompt indicator to `completing-read-multiple'.
+    ;; Alternatively try `consult-completing-read-multiple'.
+    (defun crm-indicator (args)
+      (cons (concat "[CRM] " (car args)) (cdr args)))
+    (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
 
-(use-package savehist
-  :init
-  (savehist-mode))
+    ;; Do not allow the cursor in the minibuffer prompt
+    (setq minibuffer-prompt-properties
+	  '(read-only t cursor-intangible t face minibuffer-prompt))
+    (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
 
-(use-package emacs
-  :init
-  ;; Add prompt indicator to `completing-read-multiple'.
-  ;; Alternatively try `consult-completing-read-multiple'.
-  (defun crm-indicator (args)
-    (cons (concat "[CRM] " (car args)) (cdr args)))
-  (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+    ;; Emacs 28: Hide commands in M-x which do not work in the current mode.
+    ;; Vertico commands are hidden in normal buffers.
+    ;; (setq read-extended-command-predicate
+    ;;       #'command-completion-default-include-p)
 
-  ;; Do not allow the cursor in the minibuffer prompt
-  (setq minibuffer-prompt-properties
-        '(read-only t cursor-intangible t face minibuffer-prompt))
-  (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+    ;; Enable recursive minibuffers
+    (setq enable-recursive-minibuffers t))
 
-  ;; Emacs 28: Hide commands in M-x which do not work in the current mode.
-  ;; Vertico commands are hidden in normal buffers.
-  ;; (setq read-extended-command-predicate
-  ;;       #'command-completion-default-include-p)
+  (use-package vertico
+    :init
+    (vertico-mode))
 
-  ;; Enable recursive minibuffers
-  (setq enable-recursive-minibuffers t))
+  (use-package marginalia
+    :ensure t
+    :hook (after-init . marginalia-mode))
 
-(use-package consult
-  :bind
-  ("C-x b" . consult-buffer)
-)
+  (use-package orderless
+    :ensure t
+    :config
+    (setq completion-styles '(orderless basic))
+    (setq completion-category-defaults nil)
+    (setq completion-category-overrride nil))
 
-(use-package orderless
-  :init
-  ;; Configure a custom style dispatcher (see the Consult wiki)
-  ;; (setq orderless-style-dispatchers '(+orderless-dispatch)
-  ;;       orderless-component-separator #'orderless-escapable-split-on-space)
-  (setq completion-styles '(orderless)
-        completion-category-defaults nil
-        completion-category-overrides '((file (styles partial-completion)))))
+  (use-package savehist
+    :hook (after-init . savehist-mode))
 
-(use-package ctrlf
-  :config (ctrlf-mode t))
+  (use-package corfu
+    :ensure t
+    :hook (after-init . global-corfu-mode)
+    :bind (:map corfu-map ("<tab>" . corfu-complete))
+    :config
+    (setq tab-always-indent 'complete)
+    (setq corfu-preview-current nil)
+    (setq corfu-min-width 20)
+     
+    (setq corfu-popupinfo-delay '(1.25 . 0.5))
+    (corfu-popupinfo-mode 1) ; shows documentation after `corfu-popupinfo-delay'
+     
+    ;; Sort by input history (no need to modify `corfu-sort-function').
+    (with-eval-after-load 'savehist
+      (corfu-history-mode 1)
+      (add-to-list 'savehist-additional-variables 'corfu-history)))
 
-(use-package marginalia
-  :after selectrum
-  :init (marginalia-mode)
-  (advice-add #'marginalia-cycle :after
-    (lambda () (when (bound-and-true-p selectrum-mode) (selectrum-exhibit 'keep-selected))))
+  (use-package consult
+    :bind
+    ("C-x b" . consult-buffer)
+  )
 
-  (setq marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil))
-)
+  (use-package ctrlf
+    :config (ctrlf-mode t))
 
-(use-package embark
-  :ensure t
+    (setq marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil))
+  )
 
-  :bind
-  (("C-." . embark-act)         ;; pick some comfortable binding
-   ("C-;" . embark-dwim)        ;; good alternative: M-.
-   ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
+  (use-package embark
+    :ensure t
 
-  :init
+    :bind
+    (("C-." . embark-act)         ;; pick some comfortable binding
+     ("C-;" . embark-dwim)        ;; good alternative: M-.
+     ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
 
-  ;; Optionally replace the key help with a completing-read interface
-  (setq prefix-help-command #'embark-prefix-help-command)
+    :init
 
-  :config
+    ;; Optionally replace the key help with a completing-read interface
+    (setq prefix-help-command #'embark-prefix-help-command)
 
-  ;; Hide the mode line of the Embark live/completions buffers
-  (add-to-list 'display-buffer-alist
-               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
-                 nil
-                 (window-parameters (mode-line-format . none)))))
+    :config
 
-;; Consult users will also want the embark-consult package.
-(use-package embark-consult
-  :ensure t
-  :after (embark consult)
-  :demand t ; only necessary if you have the hook below
-  ;; if you want to have consult previews as you move around an
-  ;; auto-updating embark collect buffer
-  :hook
-  (embark-collect-mode . consult-preview-at-point-mode))
+    ;; Hide the mode line of the Embark live/completions buffers
+    (add-to-list 'display-buffer-alist
+		 '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+		   nil
+		   (window-parameters (mode-line-format . none)))))
+
+  ;; Consult users will also want the embark-consult package.
+  (use-package embark-consult
+    :ensure t
+    :after (embark consult)
+    :demand t ; only necessary if you have the hook below
+    ;; if you want to have consult previews as you move around an
+    ;; auto-updating embark collect buffer
+    :hook
+    (embark-collect-mode . consult-preview-at-point-mode))
 
 #+END_SRC
 ** IBuffer
@@ -406,23 +497,41 @@ return to the last place on the save buffer
 ;; prevent new window for ediff session 
 (setq ediff-window-setup-function 'ediff-setup-windows-plain)
 #+END_SRC
-** Icons
+** Icons (nerd)
 #+BEGIN_SRC emacs-lisp
-(use-package all-the-icons :if *sys/gui*)
+  (use-package nerd-icons)
 
-(use-package all-the-icons-dired
-  :after all-the-icons
-  :if *sys/gui*
-  :diminish
-  :custom-face
-  (all-the-icons-dired-dir-face ((t `(:foreground ,(face-background 'default)))))
-  :hook (dired-mode . all-the-icons-dired-mode)
-  :config
-  ;; Workaround for all-the-icons bug until PR merged https://github.com/domtronn/all-the-icons.el/pull/150
-  (when (require 'all-the-icons nil 'noerror)
-    (setq all-the-icons-mode-icon-alist
-          (delete '(erc-mode all-the-icons-faicon "commenting-o" :height 1.0 :v-adjust 0.0 :face all-the-icons-white) all-the-icons-mode-icon-alist))
-    (add-to-list 'all-the-icons-mode-icon-alist '(erc-mode all-the-icons-faicon "commenting-o" :height 1.0 :v-adjust 0.0))))
+  (use-package nerd-icons-completion
+    :after marginalia
+    :config
+    (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup))
+
+  (use-package nerd-icons-corfu
+    :after corfu
+    :config
+    (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
+
+  (use-package nerd-icons-dired
+    :ensure t
+    :hook
+    (dired-mode . nerd-icons-dired-mode))
+  
+
+  ;;(use-package all-the-icons :if *sys/gui*)
+  ;; 
+  ;;(use-package all-the-icons-dired
+  ;;  :after all-the-icons
+  ;;  :if *sys/gui*
+  ;;  :diminish
+  ;;  :custom-face
+  ;;  (all-the-icons-dired-dir-face ((t `(:foreground ,(face-background 'default)))))
+  ;;  :hook (dired-mode . all-the-icons-dired-mode)
+  ;;  :config
+  ;;  ;; Workaround for all-the-icons bug until PR merged https://github.com/domtronn/all-the-icons.el/pull/150
+  ;;  (when (require 'all-the-icons nil 'noerror)
+  ;;    (setq all-the-icons-mode-icon-alist
+  ;;          (delete '(erc-mode all-the-icons-faicon "commenting-o" :height 1.0 :v-adjust 0.0 :face all-the-icons-white) all-the-icons-mode-icon-alist))
+  ;;    (add-to-list 'all-the-icons-mode-icon-alist '(erc-mode all-the-icons-faicon "commenting-o" :height 1.0 :v-adjust 0.0))))
 #+END_SRC
 ** Sudo edit
 #+BEGIN_SRC emacs-lisp
@@ -641,6 +750,7 @@ return to the last place on the save buffer
 )
 #+END_SRC
 * Eglot
+
 #+begin_src emacs-lisp
   (use-package eglot
    :config
@@ -656,7 +766,6 @@ return to the last place on the save buffer
    (c-mode . eglot-ensure)
    (c++-mode . eglot-ensure)))
 #+end_src
-
 * Compeny
 #+BEGIN_SRC emacs-lisp
   (use-package company
@@ -731,6 +840,7 @@ sudo apt install auctex texlive-full
   (pdf-loader-install))
 #+END_SRC
 * Julia
+
 #+BEGIN_SRC emacs-lisp
     (use-package julia-mode
       :defer t
@@ -886,7 +996,7 @@ $sudo apt-get install openscad
     ;; 	   ("C-S-]" . turbo-log-paste-as-logger-immediately)
     ;; 	   ("C-S-d" . turbo-log-delete-all-logs))
     ;;    :config
-    ;;       (setq turbo-log-msg-format-template "\"🚀: %s\"")
+    ;;       (setq turbo-log-msg-format-template "\": %s\"")
     ;;       (setq turbo-log-allow-insert-without-tree-sitter-p t))
     ;;  (turbo-log-configure
     ;; 	 :modes (julia-mode)
