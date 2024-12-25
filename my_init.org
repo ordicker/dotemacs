@@ -280,6 +280,16 @@ Bootstrap use-package
 (use-package ace-window
   :bind ("C-x o" . ace-window))
 #+END_SRC
+** Wind Move
+#+begin_src emacs-lisp
+ (use-package windmove
+  :ensure nil
+  :bind*
+  (("M-<left>" . windmove-left)
+   ("M-<right>" . windmove-right)
+   ("M-<up>" . windmove-up)
+   ("M-<down>" . windmove-down)))
+#+end_src
 ** Dashboard
 #+BEGIN_SRC emacs-lisp
   (use-package dashboard
