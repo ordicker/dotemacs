@@ -326,11 +326,6 @@ Bootstrap use-package
   (beacon-mode 1)
 )
 #+END_SRC
-** Winner
-undo windows state with C-c left/right
-#+BEGIN_SRC emacs-lisp
-(winner-mode 1)
-#+END_SRC
 ** Save place
 return to the last place on the save buffer 
 #+BEGIN_SRC emacs-lisp
@@ -452,6 +447,16 @@ return to the last place on the save buffer
     (embark-collect-mode . consult-preview-at-point-mode))
 
 #+END_SRC
+** multiple cursors
+#+begin_src emacs-lisp
+  (use-package multiple-cursors
+    :bind (("C->" . 'mc/mark-next-like-this)
+	 ("C-<" . 'mc/mark-previous-like-this)
+	 ("C-c C-<" . 'mc/mark-all-like-this)))
+
+#+end_src
+
+
 ** IBuffer
 #+BEGIN_SRC emacs-lisp
 (use-package ibuffer
@@ -590,18 +595,14 @@ return to the last place on the save buffer
 
 * Pass 
 #+BEGIN_SRC emacs-lisp
-  (use-package password-store)
-  
-  (defun pass-pull-and-push-to-git ()
-     (message "pull and push changes to git") 
-     (lambda () (password-store--run-git "pull" "origin" "master")
-		(password-store--run-git "push" "origin" "master")))
+(use-package password-store)
 
-  (use-package pass
-    :after password-store
-    :config
-    (advice-add #'pass-update-buffer :before #'pass-pull-and-push-to-git)
-  )
+(use-package password-store-menu
+  :config (password-store-menu-enable))
+  
+(use-package pass
+   :after password-store)
+  
 #+END_SRC
 * Magit
 #+BEGIN_SRC emacs-lisp 
