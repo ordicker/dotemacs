@@ -586,6 +586,12 @@ return to the last place on the save buffer
 
 
 #+end_src
+** secrets
+#+begin_src emacs-lisp
+  (load-file "~/.emacs.d/secrets.el")
+
+#+end_src
+
 * Pass 
 #+BEGIN_SRC emacs-lisp
 (use-package password-store)
@@ -923,7 +929,6 @@ $sudo apt-get install openscad
     ;(setenv "ANTHROPIC_API_KEY" "sk-...")
     ; defun my-get-openrouter-api-key yourself elsewhere for security reasons
     ;(setenv "OPENROUTER_API_KEY" (my-get-openrouter-api-key))
-    (setenv "GEMINI_API_KEY" "")
     (setq aidermacs-backend 'vterm)
     (setq aidermacs-vterm-multiline-newline-key "S-<return>")
     :custom
