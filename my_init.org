@@ -1,14 +1,6 @@
 * Notes 
 ** emacs configuration
 --prefix=/usr/local/stow/emacs-29.1 --with-x --with-xwidgets --with-mailutils --with-modules --with-json --with-native-compilation=aot --with-tree-sitter --with-imagemagick
-** fonts and icons 
-Run M-x all-the-icons-install-fonts
-
-** google drive on linux 
-[[https://github.com/astrada/google-drive-ocamlfuse][google-drive-ocamlfuse]]
-[[https://github.com/astrada/google-drive-ocamlfuse/wiki/Team-Drives][Team Drives]]
-mount command
-google-drive-ocamlfuse -label GalGalaim ~/GoogleDrive/
 * Emacs configuration
 ** Get to here
 #+BEGIN_SRC emacs-lisp
@@ -77,7 +69,8 @@ google-drive-ocamlfuse -label GalGalaim ~/GoogleDrive/
 (setq split-height-threshold nil)
 (setq split-width-threshold 70)
 (setq native-comp-async-report-warnings-errors nil)
-
+(defalias 'yes-or-no #'y-or-n-p)
+(recentf-mode t)
   
 (defun prot/keyboard-quit-dwim ()
   "Do-What-I-Mean behaviour for a general `keyboard-quit'.
@@ -362,11 +355,6 @@ return to the last place on the save buffer
 	  '(read-only t cursor-intangible t face minibuffer-prompt))
     (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
 
-    ;; Emacs 28: Hide commands in M-x which do not work in the current mode.
-    ;; Vertico commands are hidden in normal buffers.
-    ;; (setq read-extended-command-predicate
-    ;;       #'command-completion-default-include-p)
-
     ;; Enable recursive minibuffers
     (setq enable-recursive-minibuffers t))
 
@@ -455,7 +443,6 @@ return to the last place on the save buffer
 	 ("C-c C-<" . 'mc/mark-all-like-this)))
 
 #+end_src
-
 
 ** IBuffer
 #+BEGIN_SRC emacs-lisp
@@ -593,6 +580,12 @@ return to the last place on the save buffer
     :init (exec-path-from-shell-initialize))
 #+end_src
 
+** programming
+#+begin_src emacs-lisp
+(add-hook 'prog-mode-hook #'flymake-mode)
+
+
+#+end_src
 * Pass 
 #+BEGIN_SRC emacs-lisp
 (use-package password-store)
@@ -625,6 +618,7 @@ return to the last place on the save buffer
   (global-diff-hl-mode +1)
   (add-hook 'dired-mode-hook 'diff-hl-dired-mode)
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
+  (add-hook 'prog-mode-hook #'diff-hl-mode)
   ;; better coloring for light theme 
   :init 
   (custom-set-faces
@@ -703,12 +697,6 @@ return to the last place on the save buffer
 (use-package projectile-ripgrep
   :after projectile)
 #+END_SRC
-* Flycheck
-#+BEGIN_SRC emacs-lisp
-(use-package flycheck
-  :init
-  (global-flycheck-mode t))
-#+END_SRC
 * Flyspell-correct 
 #+BEGIN_SRC emacs-lisp 
 (use-package flyspell
@@ -760,21 +748,18 @@ return to the last place on the save buffer
 )
 #+END_SRC
 * Eglot
-
 #+begin_src emacs-lisp
-  (use-package eglot
-   :config
-  (add-to-list 'eglot-server-programs '((c-mode c-ts-mode c++-mode c++-ts-mode objc-mode)
-					"clangd-12" "-j=2"
-					"--background-index"
-					"--clang-tidy"
-					"--completion-style=detailed"
-					"--query-driver=/home/dicker/.platformio/packages/toolchain-xtensa-esp32/bin/xtensa-esp32-elf-g++"
-					"--compile-commands-dir=."))
-  :hook
-  ((python-mode . eglot-ensure)
-   (c-mode . eglot-ensure)
-   (c++-mode . eglot-ensure)))
+    (use-package eglot
+     :config
+    (add-to-list 'eglot-server-programs '((c-mode c-ts-mode c++-mode c++-ts-mode objc-mode)
+    					"clangd-12" "-j=2"
+    					"--background-index"
+    					"--clang-tidy"
+    					"--completion-style=detailed"
+    					"--query-driver=/home/dicker/.platformio/packages/toolchain-xtensa-esp32/bin/xtensa-esp32-elf-g++"
+    					"--compile-commands-dir=."))
+    :hook
+    ((prog-mode-hook . eglot-ensure))
 #+end_src
 * Compeny
 #+BEGIN_SRC emacs-lisp
@@ -825,6 +810,11 @@ return to the last place on the save buffer
 ** tex
 sudo apt install auctex texlive-full
 #+BEGIN_SRC emacs-lisp
+(use-package auctex
+  :defer t
+  :config
+  (setq TeX-auto-save t))
+
 (use-package tex
     :ensure auctex
     :config (progn
@@ -870,42 +860,6 @@ sudo apt install auctex texlive-full
       ;;  (setq lsp-julia-default-environment "~/.julia/environments/v1.8"))
 
 #+END_SRC
-* Verilog
-#+begin_src emacs-lisp
-;;  (use-package verilog-mode
-;;    :defer t
-;;    :commands verilog-mode
-;;    :mode ("\\.s?vh?$" . verilog-mode))
-;; 
-;;  (use-package verilog-ts-mode)
-;;  (use-package verilog-ext
-;;    :hook ((verilog-mode . verilog-ext-mode))
-;;    :init
-;;    ;; Can also be set through `M-x RET customize-group RET verilog-ext':
-;;    ;; Comment out/remove the ones you do not need
-;;    (setq verilog-ext-feature-list
-;; 	  '(font-lock
-;; 	    xref
-;; 	    capf
-;; 	    hierarchy
-;; 	    eglot
-;; 	    flycheck
-;; 	    beautify
-;; 	    navigation
-;; 	    template
-;; 	    formatter
-;; 	    compilation
-;; 	    imenu
-;; 	    which-func
-;; 	    hideshow
-;; 	    typedefs
-;; 	    time-stamp
-;; 	    block-end-comments
-;; 	    ports))
-;;    :config
-;;    (verilog-ext-mode-setup))
-#+end_src
-
 * Python 
 pyright need node version> 12.0.0
 to install that 
@@ -990,11 +944,6 @@ $sudo apt-get install openscad
   (use-package tree-sitter
     :ensure t
     :after tree-sitter-langs)
-
-  (use-package treesit-auto
-    :config
-    (treesit-auto-add-to-auto-mode-alist 'all)
-    (global-treesit-auto-mode))
   
     ;;  (use-package turbo-log
     ;;    :quelpa (turbo-log :fetcher github :repo "artawower/turbo-log.el")
