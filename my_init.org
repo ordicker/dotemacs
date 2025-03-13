@@ -669,18 +669,10 @@ return to the last place on the save buffer
        (python      . t)
        (shell       . t)
        (calc        . t)
-       (org         . t)
-       (octave      . t)
-       (julia-vterm . t)))
+       (org         . t)))
 
     (setq org-babel-python-command "python3")
     (setq org-src-fontify-natively t)
-
-    ;; julia-vterm babel setup
-    (use-package ob-julia-vterm)
-    (use-package julia-vterm)
-    (defalias 'org-babel-execute:julia 'org-babel-execute:julia-vterm)
-    (defalias 'org-babel-variable-assignments:julia 'org-babel-variable-assignments:julia-vterm)
 
     ;; inline preview
     (use-package org-inline-pdf
@@ -737,60 +729,29 @@ return to the last place on the save buffer
 #+BEGIN_SRC emacs-lisp
 (use-package smartparens
   :hook (prog-mode . smartparens-mode)
-  :bind (("C-) <right>" . sp-slurp-hybrid-sexp)
-         ("C-) <left>" . sp-forward-barf-sexp)
+  :bind (("C-)" . sp-slurp-hybrid-sexp)
+	 ("C-(" . sp-forward-barf-sexp)
   )
   :custom
   (sp-escape-quotes-after-insert nil)
   :config
   (require 'smartparens-config)
-  (show-paren-mode t)
-)
+  (show-paren-mode t))
 #+END_SRC
 * Eglot
 #+begin_src emacs-lisp
-    (use-package eglot
-     :config
+  (use-package eglot
+    :config
     (add-to-list 'eglot-server-programs '((c-mode c-ts-mode c++-mode c++-ts-mode objc-mode)
-    					"clangd-12" "-j=2"
-    					"--background-index"
-    					"--clang-tidy"
-    					"--completion-style=detailed"
-    					"--query-driver=/home/dicker/.platformio/packages/toolchain-xtensa-esp32/bin/xtensa-esp32-elf-g++"
-    					"--compile-commands-dir=."))
+  					"clangd-12" "-j=2"
+  					"--background-index"
+  					"--clang-tidy"
+  					"--completion-style=detailed"
+  					"--query-driver=/home/dicker/.platformio/packages/toolchain-xtensa-esp32/bin/xtensa-esp32-elf-g++"
+  					"--compile-commands-dir=."))
     :hook
-    ((prog-mode-hook . eglot-ensure))
+    ((prog-mode-hook . eglot-ensure)))
 #+end_src
-* Compeny
-#+BEGIN_SRC emacs-lisp
-  (use-package company
-      :config
-      (setq company-idle-delay 0)
-      (setq company-minimum-prefix-length 3)
-
-      (global-company-mode t)
-  )
-
-  (use-package company-statistics         ; Sort company candidates by statistics
-    :defer t
-    :config
-    (setq company-statistics-file (emacs-d "cache/company-statistics"))
-    (with-eval-after-load 'company
-      (company-statistics-mode)))
-
-  (use-package company-math
-    :config
-    ;; global activation of the unicode symbol completion
-    (add-to-list 'company-backends 'company-math-symbols-unicode)
-    (setq company-math-disallow-unicode-symbols-in-faces nil)
-    ;; local configuration for TeX modes
-    (defun my/latex-mode-setup ()
-      (setq-local company-backends
-		  (append '(company-math-symbols-latex company-latex-commands)
-			  company-backends)))
-
-    (add-hook 'TeX-mode-hook 'my/latex-mode-setup))
-#+END_SRC
 * Shell 
 ** shell-here
 #+BEGIN_SRC emacs-lisp
@@ -801,7 +762,7 @@ return to the last place on the save buffer
     (setq explicit-shell-file-name "/bin/bash")))
 #+END_SRC
 ** vterm
-[[https://github.com/akermu/emacs-libvterm][github]]
+github]]
 #+begin_src emacs-lisp
 (use-package vterm
     :ensure t)
@@ -814,7 +775,7 @@ sudo apt install auctex texlive-full
   :defer t
   :config
   (setq TeX-auto-save t))
-
+ 
 (use-package tex
     :ensure auctex
     :config (progn
@@ -839,41 +800,26 @@ sudo apt install auctex texlive-full
   :config
   (pdf-loader-install))
 #+END_SRC
-* Julia
-
+* Julia 
 #+BEGIN_SRC emacs-lisp
     (use-package julia-mode
       :defer t
       :commands julia-mode
       :mode ("\\.jl$" . julia-mode))
-
+ 
     ;; for julia-babel and ploting
     ;; alias julia-org="julia -q -J<path-to-sysimage>"
     (use-package julia-vterm
       :config
       (setq julia-vterm-repl-program
 	    "julia -q -J/home/dicker/workspace/julia-org/JuliaOrgSysimage.so --project=/home/dicker/workspace/julia-org"))
-
-    ;;(use-package eglot-jl)
-      ;;(use-package lsp-julia
-      ;;  :config
-      ;;  (setq lsp-julia-default-environment "~/.julia/environments/v1.8"))
-
-#+END_SRC
+ #+END_SRC
 * Python 
 pyright need node version> 12.0.0
 to install that 
 $ sudo npm install n -g
 $ sudo n stable
-#+BEGIN_SRC emacs-lisp
-  ;;(add-to-list 'exec-path "~/anaconda3/bin/")
-  ;;(use-package virtualenv)
-  (use-package conda
-    :init
-    (setq conda-anaconda-home (expand-file-name "~/anaconda3/"))
-    (setq conda-env-home-directory (expand-file-name "~/.virtualenvs/"))
-  )
-
+#+BEGIN_SRC emacs-lisp 
   (use-package python-mode
     :after flycheck
     :mode "\\.py\\'"
@@ -881,31 +827,31 @@ $ sudo n stable
     (python-indent-offset 4)
     (flycheck-python-pycompile-executable "python3")
     (python-shell-interpreter "python3"))
-
+ 
   (use-package poetry
     :hook
     (python-mode . poetry-tracking-mode))
-
+ 
 #+END_SRC
 * C/C++/CUDA
 install clangd 
 #+begin_src bash
-$sudo apt-get install clangd-12  
+$sudo apt-get install clangd-12	 
 #+end_src
-
+ 
 #+BEGIN_SRC emacs-lisp
 (setq-default c-basic-offset 4)
-
+ 
 (use-package modern-cpp-font-lock
   :diminish t
   :init (modern-c++-font-lock-global-mode t))
-
+ 
 ;;(use-package cuda-mode)
-
+ 
 ;;; cmake
 (use-package cmake-mode)
 #+END_SRC
-
+ 
 * Matlab
 #+BEGIN_SRC emacs-lisp
 (use-package matlab-mode
@@ -917,27 +863,13 @@ $sudo apt-get install clangd-12
   (matlab-indent-function t)
   (matlab-shell-command "matlab"))
 #+END_SRC
-* Restclient
-#+BEGIN_SRC emacs-lisp
-(use-package restclient)
-
-(use-package company-restclient
-    :config 
-    (add-to-list 'company-backends 'company-restclient))
-#+END_SRC
-
-* YAML
-#+BEGIN_SRC emacs-lisp
-(use-package yaml-mode)
-
-#+END_SRC
 * OpenSCAD
 $sudo apt-get install openscad
 #+begin_src emacs-lisp
 ;;(use-package scad-mode)
 ;;(use-package scad-preview)
 #+end_src
-
+ 
 * Tree-sitter
 #+begin_src emacs-lisp
   (use-package tree-sitter-langs)
@@ -945,28 +877,28 @@ $sudo apt-get install openscad
     :ensure t
     :after tree-sitter-langs)
   
-    ;;  (use-package turbo-log
-    ;;    :quelpa (turbo-log :fetcher github :repo "artawower/turbo-log.el")
-    ;;    :bind (("C-S-l" . turbo-log-print)
-    ;; 	   ("C-S-i" . turbo-log-print-immediately)
-    ;; 	   ("C-S-h" . turbo-log-comment-all-logs)
-    ;; 	   ("C-S-s" . turbo-log-uncomment-all-logs)
-    ;; 	   ("C-S-[" . turbo-log-paste-as-logger)
-    ;; 	   ("C-S-]" . turbo-log-paste-as-logger-immediately)
-    ;; 	   ("C-S-d" . turbo-log-delete-all-logs))
-    ;;    :config
-    ;;       (setq turbo-log-msg-format-template "\": %s\"")
-    ;;       (setq turbo-log-allow-insert-without-tree-sitter-p t))
-    ;;  (turbo-log-configure
-    ;; 	 :modes (julia-mode)
-    ;; 	 :strategy merge
-    ;; 	 :loggers ("println(%s)")
-    ;; 	 :jump-list ((class_declaration (method_definition "constructor")))
-    ;; 	 :identifier-node-types (identifier member_expression)
-    ;; 	 :post-insert-hook (prettier-prettify)
-    ;; 	 :msg-format-template "\"Debug: %s\"")
+    ;;	(use-package turbo-log
+    ;;	  :quelpa (turbo-log :fetcher github :repo "artawower/turbo-log.el")
+    ;;	  :bind (("C-S-l" . turbo-log-print)
+    ;;	   ("C-S-i" . turbo-log-print-immediately)
+    ;;	   ("C-S-h" . turbo-log-comment-all-logs)
+    ;;	   ("C-S-s" . turbo-log-uncomment-all-logs)
+    ;;	   ("C-S-[" . turbo-log-paste-as-logger)
+    ;;	   ("C-S-]" . turbo-log-paste-as-logger-immediately)
+    ;;	   ("C-S-d" . turbo-log-delete-all-logs))
+    ;;	  :config
+    ;;	     (setq turbo-log-msg-format-template "\": %s\"")
+    ;;	     (setq turbo-log-allow-insert-without-tree-sitter-p t))
+    ;;	(turbo-log-configure
+    ;;	 :modes (julia-mode)
+    ;;	 :strategy merge
+    ;;	 :loggers ("println(%s)")
+    ;;	 :jump-list ((class_declaration (method_definition "constructor")))
+    ;;	 :identifier-node-types (identifier member_expression)
+    ;;	 :post-insert-hook (prettier-prettify)
+    ;;	 :msg-format-template "\"Debug: %s\"")
 #+end_src
-
+ 
 * Fun
 ** vimgolf
 ** exercism
@@ -980,5 +912,23 @@ $sudo apt-get install openscad
     (leetcode-prefer-language "python3")
     (leetcode-save-solutions t)
     (leetcode-directory "~/workspace/leetcode"))
+#+end_src
+ 
+* Aider - LLM coder
+#+begin_src emacs-lisp
+  (use-package aidermacs
+    :bind (("C-c a" . aidermacs-transient-menu))
+    :config
+    ; Set API_KEY in .bashrc, that will automatically picked up by aider or in elisp
+    ;(setenv "ANTHROPIC_API_KEY" "sk-...")
+    ; defun my-get-openrouter-api-key yourself elsewhere for security reasons
+    ;(setenv "OPENROUTER_API_KEY" (my-get-openrouter-api-key))
+    (setenv "GEMINI_API_KEY" "")
+    (setq aidermacs-backend 'vterm)
+    (setq aidermacs-vterm-multiline-newline-key "S-<return>")
+    :custom
+    ;(aidermacs-use-architect-mode t)
+    (aidermacs-default-model "gemini/gemini-1.5-pro-latest"))
+ 
 #+end_src
 
