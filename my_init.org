@@ -695,6 +695,21 @@ return to the last place on the save buffer
       :config
       (add-hook 'org-mode-hook #'org-inline-pdf-mode))
 #+END_SRC
+* Markdown
+#+begin_src emacs-lisp
+  (use-package markdown-mode
+    :commands (markdown-mode gfm-mode)
+    :mode (("README\\.md\\'" . gfm-mode)
+           ("\\.md\\'" . markdown-mode)
+           ("\\.markdown\\'" . markdown-mode))
+    :init (setq markdown-command "multimarkdown"))  
+#+end_src
+** live markdown preview
+#+begin_src emacs-lisp
+  (use-package flymd
+ :commands (flymd-flyit))
+#+end_src
+
 * Projectile
 #+BEGIN_SRC emacs-lisp 
 (use-package projectile
@@ -778,6 +793,10 @@ return to the last place on the save buffer
 #+begin_src elisp
   (use-package flymake
     :hook ((prog-mode . flymake-mode)))
+#+end_src
+** Debugger
+#+begin_src elisp
+  (use-package cape)
 #+end_src
 
 * Shell 
