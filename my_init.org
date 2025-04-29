@@ -288,13 +288,14 @@ Bootstrap use-package
   (use-package dashboard
     :config
     (dashboard-setup-startup-hook)
+    (setq dashboard-projects-backend 'projectile)
     ;;(setq dashboard-startup-banner "~/.emacs.d/gtd/gtd.png")
     (setq dashboard-startup-banner 'logo)
     (setq dashboard-banner-logo-title "Welcome to Dicker's Emacs")
     (setq dashboard-set-navigator t)
     (setq dashboard-items '((bookmarks . 5)
-			    (recents  . 5)
-			    (projects . 5)))
+  			    (recents  . 5)
+  			    (projects . 5)))
   )
 #+END_SRC
 ** Super-save
@@ -498,7 +499,7 @@ return to the last place on the save buffer
 #+end_src
 
 * Completions
-** Embark/vertico/consult/ctrl-F
+** Embark/vertico/corfu/ctrl-F
 #+BEGIN_SRC emacs-lisp 
   (use-package emacs
     :init
@@ -559,11 +560,6 @@ return to the last place on the save buffer
     :config 
     (corfu-candidate-overlay-mode 1))
 
-  (use-package consult
-    :bind
-    ("C-x b" . consult-buffer)
-  )
-
   (use-package ctrlf
     :config (ctrlf-mode t)
     (setq marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil))
@@ -589,16 +585,6 @@ return to the last place on the save buffer
   		 '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
   		   nil
   		   (window-parameters (mode-line-format . none)))))
-
-  ;; Consult users will also want the embark-consult package.
-  (use-package embark-consult
-    :ensure t
-    :after (embark consult)
-    :demand t ; only necessary if you have the hook below
-    ;; if you want to have consult previews as you move around an
-    ;; auto-updating embark collect buffer
-    :hook
-    (embark-collect-mode . consult-preview-at-point-mode))
 
 #+END_SRC
 
@@ -984,7 +970,7 @@ $sudo apt-get install openscad
     (setq aidermacs-vterm-multiline-newline-key "S-<return>")
     :custom
     ;(aidermacs-use-architect-mode t)
-    (aidermacs-default-model "gemini/gemini-1.5-pro-latest"))
+    (aidermacs-default-model "gemini"))
  
 #+end_src
 
