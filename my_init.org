@@ -688,12 +688,11 @@ return to the last place on the save buffer
     :mode (("README\\.md\\'" . gfm-mode)
            ("\\.md\\'" . markdown-mode)
            ("\\.markdown\\'" . markdown-mode))
-    :init (setq markdown-command "multimarkdown"))  
-#+end_src
-** live markdown preview
-#+begin_src emacs-lisp
-  (use-package flymd
- :commands (flymd-flyit))
+    :init (setq markdown-command '("pandoc" "--from=markdown" "--to=html5")))
+
+  (use-package uniline
+    :bind
+    (:map uniline-mode-map ("C-c e" . uniline-launch-interface)))
 #+end_src
 
 * Projectile
