@@ -228,8 +228,8 @@ Bootstrap use-package
   ;;(set-language-environment "UTF-8")
   ;;(set-charset-priority 'unicode)
   ;;(prefer-coding-system 'utf-8-unix)
-  ;(setq default-frame-alist '((font . "DejaVu Sans Mono-16")))
-  (setq default-frame-alist '((font . "Hack-16")))
+  (setq default-frame-alist '((font . "DejaVu Sans Mono-16")))
+  ;(setq default-frame-alist '((font . "Hack-16")))
   
   (tool-bar-mode -1)
   (menu-bar-mode -1)
@@ -494,7 +494,7 @@ return to the last place on the save buffer
 #+end_src
 ** secrets
 #+begin_src emacs-lisp
-  (load-file "~/.emacs.d/secrets.el")
+  (load-if-exists "~/.emacs.d/secrets.el")
 
 #+end_src
 
@@ -760,11 +760,10 @@ return to the last place on the save buffer
   (use-package eglot
     :config
     (add-to-list 'eglot-server-programs '((c-mode c-ts-mode c++-mode c++-ts-mode objc-mode)
-  					"clangd-12" "-j=2"
+  					"clangd-20" "-j=2"
   					"--background-index"
   					"--clang-tidy"
   					"--completion-style=detailed"
-  					"--query-driver=/home/dicker/.platformio/packages/toolchain-xtensa-esp32/bin/xtensa-esp32-elf-g++"
   					"--compile-commands-dir=."))
     :hook
     ((prog-mode-hook . eglot-ensure)))
@@ -798,7 +797,7 @@ return to the last place on the save buffer
 github]]
 #+begin_src emacs-lisp
 (use-package vterm
-    :ensure t)
+  :bind(:map vterm-mode (vterm-yank "C-y")))
 #+end_src
 * Latex
 ** tex
@@ -860,11 +859,9 @@ $ sudo n stable
     (python-indent-offset 4)
     (flycheck-python-pycompile-executable "python3")
     (python-shell-interpreter "python3"))
- 
-  (use-package poetry
-    :hook
-    (python-mode . poetry-tracking-mode))
- 
+
+  (use-package uv-mode
+    :hook (python-mode . uv-mode-auto-activate-hook))
 #+END_SRC
 * C/C++/CUDA
 install clangd 
@@ -970,7 +967,7 @@ $sudo apt-get install openscad
     (setq aidermacs-vterm-multiline-newline-key "S-<return>")
     :custom
     ;(aidermacs-use-architect-mode t)
-    (aidermacs-default-model "gemini"))
+    (aidermacs-default-model "openrouter/google/gemini-2.0-flash-exp:free"))
  
 #+end_src
 
