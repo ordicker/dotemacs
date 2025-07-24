@@ -553,13 +553,11 @@ return to the last place on the save buffer
     ;; Sort by input history (no need to modify `corfu-sort-function').
     (with-eval-after-load 'savehist
       (corfu-history-mode 1)
-      (add-to-list 'savehist-additional-variables 'corfu-history)))
+      (add-to-list 'savehist-additional-variables 'corfu-history))
+    :init
+      (global-corfu-mode))
 
-  (use-package corfu-candidate-overlay
-    :after corfu
-    :config 
-    (corfu-candidate-overlay-mode 1))
-
+  
   (use-package ctrlf
     :config (ctrlf-mode t)
     (setq marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light nil))
@@ -845,22 +843,23 @@ sudo apt install auctex texlive-full
       (setq julia-vterm-repl-program
 	    "julia -q -J/home/dicker/workspace/julia-org/JuliaOrgSysimage.so --project=/home/dicker/workspace/julia-org"))
  #+END_SRC
-* Python 
-pyright need node version> 12.0.0
-to install that 
-$ sudo npm install n -g
-$ sudo n stable
+* Python
 #+BEGIN_SRC emacs-lisp 
-  (use-package python-mode
+  (use-package python-ts-mode
     :after flycheck
     :mode "\\.py\\'"
     :custom
-    (python-indent-offset 4)
+    ;;(python-indent-offset 4)
     (flycheck-python-pycompile-executable "python3")
     (python-shell-interpreter "python3"))
 
-  (use-package uv-mode
-    :hook (python-mode . uv-mode-auto-activate-hook))
+  (use-package auto-virtualenv
+    :config
+    (setq auto-virtualenv-verbose t)
+    (setq auto-virtualenv-reload-lsp t)
+    (setq auto-virtualenv-python-project-files '("pyproject.toml"))
+    (setq auto-virtualenv-local-dirs '(".venv"))
+    (auto-virtualenv-setup))
 #+END_SRC
 * C/C++/CUDA
 install clangd 
