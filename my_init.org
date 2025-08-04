@@ -7,7 +7,7 @@
 (defun edit-configs ()
   "Opens the README.org file."
   (interactive)
-  (find-file "~/.emacs.d/my_init.org"))
+  (find-file (expand-file-name (concat user-emacs-directory "my_init.org"))))
 
 (global-set-key (kbd "C-x i") #'edit-configs)
 #+END_SRC
@@ -494,7 +494,7 @@ return to the last place on the save buffer
 #+end_src
 ** secrets
 #+begin_src emacs-lisp
-  (load-if-exists "~/.emacs.d/secrets.el")
+  (load-if-exists (expand-file-name (concat user-emacs-directory "secrets.el")))
 
 #+end_src
 
@@ -845,21 +845,23 @@ sudo apt install auctex texlive-full
  #+END_SRC
 * Python
 #+BEGIN_SRC emacs-lisp 
+  ; TODO: treesitter integration should be better :(
   (use-package python-ts-mode
-    :after flycheck
-    :mode "\\.py\\'"
-    :custom
-    ;;(python-indent-offset 4)
-    (flycheck-python-pycompile-executable "python3")
-    (python-shell-interpreter "python3"))
+      :mode "\\.py\\'"
+      :custom
+      ;;(python-indent-offset 4)
+      (python-shell-interpreter "python3")
+      :config
+      (add-to-list 'treesit-language-source-alist '(python "https://github.com/tree-sitter/tree-sitter-python" "master" "src"))
+  )
 
-  (use-package auto-virtualenv
-    :config
-    (setq auto-virtualenv-verbose t)
-    (setq auto-virtualenv-reload-lsp t)
-    (setq auto-virtualenv-python-project-files '("pyproject.toml"))
-    (setq auto-virtualenv-local-dirs '(".venv"))
-    (auto-virtualenv-setup))
+    (use-package auto-virtualenv
+      :config
+      (setq auto-virtualenv-verbose t)
+      (setq auto-virtualenv-reload-lsp t)
+      (setq auto-virtualenv-python-project-files '("pyproject.toml"))
+      (setq auto-virtualenv-local-dirs '(".venv"))
+      (auto-virtualenv-setup))
 #+END_SRC
 * C/C++/CUDA
 install clangd 
@@ -907,13 +909,13 @@ $sudo apt-get install openscad
  
 * Tree-sitter
 #+begin_src emacs-lisp
-  (use-package tree-sitter-langs)
-  (use-package tree-sitter
-    :ensure t
-    :after tree-sitter-langs
-    :config
-    (global-tree-sitter-mode)
-    (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+;;  (use-package tree-sitter-langs)
+;;  (use-package tree-sitter
+;;    :ensure t
+;;    :after tree-sitter-langs
+;;    :config
+;;    (global-tree-sitter-mode)
+;;    (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
 
     ;;	(use-package turbo-log
     ;;	  :quelpa (turbo-log :fetcher github :repo "artawower/turbo-log.el")
@@ -965,7 +967,7 @@ $sudo apt-get install openscad
     (setq aidermacs-vterm-multiline-newline-key "S-<return>")
     :custom
     ;(aidermacs-use-architect-mode t)
-    (aidermacs-default-model "openrouter/google/gemini-2.0-flash-exp:free"))
+    (aidermacs-default-model "gemini/gemini-2.5-flash"))
  
 #+end_src
 
