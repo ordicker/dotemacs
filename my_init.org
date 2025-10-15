@@ -279,10 +279,45 @@ Bootstrap use-package
  (use-package windmove
   :ensure nil
   :bind*
-  (("M-<left>" . windmove-left)
-   ("M-<right>" . windmove-right)
-   ("M-<up>" . windmove-up)
-   ("M-<down>" . windmove-down)))
+  (("M-<left>" . my/windmove-or-sway-left)
+   ("M-<right>" . my/windmove-or-sway-right)
+   ("M-<up>" . my/windmove-or-sway-up)
+   ("M-<down>" . my/windmove-or-sway-down))
+  :init
+  (defun my/windmove-or-sway-up ()
+    "Move window up with windmove, or sway focus left if windmove fails."
+    (interactive)
+    (condition-case nil
+        (windmove-up)
+      (error
+       (shell-command "swaymsg focus up")
+       (message "Used sway to focus up"))))
+  (defun my/windmove-or-sway-down ()
+    "Move window down with windmove, or sway focus left if windmove fails."
+    (interactive)
+    (condition-case nil
+        (windmove-down)
+      (error
+       (shell-command "swaymsg focus down")
+       (message "Used sway to focus down"))))
+  (defun my/windmove-or-sway-left ()
+    "Move window left with windmove, or sway focus left if windmove fails."
+    (interactive)
+    (condition-case nil
+        (windmove-left)
+      (error
+       (shell-command "swaymsg focus left")
+       (message "Used sway to focus left"))))
+  (defun my/windmove-or-sway-right ()
+    "Move window right with windmove, or sway focus left if windmove fails."
+    (interactive)
+    (condition-case nil
+        (windmove-right)
+      (error
+       (shell-command "swaymsg focus right")
+       (message "Used sway to focus right"))))
+)
+
 #+end_src
 ** Dashboard
 #+BEGIN_SRC emacs-lisp
@@ -958,18 +993,21 @@ $sudo apt-get install openscad
 * Aider - LLM coder
 #+begin_src emacs-lisp
   (use-package aidermacs
-    :bind (("C-c a" . aidermacs-transient-menu))
-    :config
-    ; Set API_KEY in .bashrc, that will automatically picked up by aider or in elisp
-    ;(setenv "ANTHROPIC_API_KEY" "sk-...")
-    ; defun my-get-openrouter-api-key yourself elsewhere for security reasons
-    ;(setenv "OPENROUTER_API_KEY" (my-get-openrouter-api-key))
-    (setq aidermacs-backend 'vterm)
-    (setq aidermacs-vterm-multiline-newline-key "S-<return>")
-    :custom
-    ;(aidermacs-use-architect-mode t)
-    (aidermacs-default-model "gemini/gemini-2.5-flash"))
- 
+      :bind (("C-c a" . aidermacs-transient-menu))
+      :config
+      ; Set API_KEY in .bashrc, that will automatically picked up by aider or in elisp
+      ;(setenv "ANTHROPIC_API_KEY" "sk-...")
+      ; defun my-get-openrouter-api-key yourself elsewhere for security reasons
+      ;(setenv "OPENROUTER_API_KEY" (my-get-openrouter-api-key))
+      (setq aidermacs-backend 'vterm)
+      (setq aidermacs-vterm-multiline-newline-key "S-<return>")
+      :custom
+      ;(aidermacs-use-architect-mode t)
+      ;(aidermacs-default-model "gemini/gemini-2.5-flash")
+      (aidermacs-default-model "anthropic/claude-sonnet-4-5")
+      (aidermacs-extra-args '("--copy-paste" "--no-show-model-warnings"))
+      ;(aidermacs-config-file "~/.aider/.aider.conf.yml")
+  )
 #+end_src
 
 
