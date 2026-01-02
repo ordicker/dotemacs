@@ -1,6 +1,6 @@
 * Notes 
 ** emacs configuration
---prefix=/usr/local/stow/emacs-29.1 --with-x --with-xwidgets --with-mailutils --with-modules --with-json --with-native-compilation=aot --with-tree-sitter --with-imagemagick
+--prefix=/usr/local/stow/emacs-30.2 --with-x --with-pgtk --with-mailutils --with-modules --with-json --with-native-compilation=aot --with-tree-sitter --with-imagemagick
 * Emacs configuration
 ** Get to here
 #+BEGIN_SRC emacs-lisp
