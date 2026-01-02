@@ -116,7 +116,6 @@ The DWIM behaviour of this command is as follows:
 
 
   (use-package dired-subtree
-    :ensure t
     :after dired
     :bind
     ( :map dired-mode-map
@@ -126,16 +125,6 @@ The DWIM behaviour of this command is as follows:
       ("S-TAB" . dired-subtree-remove))
     :config
     (setq dired-subtree-use-backgrounds nil))
-
-  (use-package trashed
-    :ensure t
-    :commands (trashed)
-    :config
-    (setq trashed-action-confirmer 'y-or-n-p)
-    (setq trashed-use-header-line t)
-    (setq trashed-sort-key '("Date deleted" . t))
-    (setq trashed-date-format "%Y-%m-%d %H:%M:%S"))
-
 #+end_src
 
 ** Key binding
@@ -238,7 +227,6 @@ Bootstrap use-package
   (use-package solarized-theme)
 
   (use-package heaven-and-hell
-    :ensure t
     :init
     (setq heaven-and-hell-themes
 	  '((light . solarized-light)
@@ -455,7 +443,6 @@ return to the last place on the save buffer
     (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
 
   (use-package nerd-icons-dired
-    :ensure t
     :hook
     (dired-mode . nerd-icons-dired-mode))
   
@@ -561,11 +548,9 @@ return to the last place on the save buffer
     (vertico-mode))
 
   (use-package marginalia
-    :ensure t
     :hook (after-init . marginalia-mode))
 
   (use-package orderless
-    :ensure t
     :custom
     (completion-styles '(orderless basic))
     (completion-category-defaults nil)
@@ -575,7 +560,6 @@ return to the last place on the save buffer
     :hook (after-init . savehist-mode))
 
   (use-package corfu
-    :ensure t
     :hook (after-init . global-corfu-mode)
     :bind (:map corfu-map ("<tab>" . corfu-complete))
     :config
@@ -600,8 +584,6 @@ return to the last place on the save buffer
   )
 
   (use-package embark
-    :ensure t
-
     :bind
     (("C-." . embark-act)         ;; pick some comfortable binding
      ("C-;" . embark-dwim)        ;; good alternative: M-.
@@ -827,10 +809,8 @@ return to the last place on the save buffer
     (setq explicit-shell-file-name "/bin/bash")))
 #+END_SRC
 ** vterm
-github]]
 #+begin_src emacs-lisp
-(use-package vterm
-  :bind(:map vterm-mode (vterm-yank "C-y")))
+(use-package vterm)
 #+end_src
 * Latex
 ** tex
@@ -871,18 +851,12 @@ sudo apt install auctex texlive-full
       :defer t
       :commands julia-mode
       :mode ("\\.jl$" . julia-mode))
- 
-    ;; for julia-babel and ploting
-    ;; alias julia-org="julia -q -J<path-to-sysimage>"
-    (use-package julia-vterm
-      :config
-      (setq julia-vterm-repl-program
-	    "julia -q -J/home/dicker/workspace/julia-org/JuliaOrgSysimage.so --project=/home/dicker/workspace/julia-org"))
- #+END_SRC
+#+END_SRC
 * Python
 #+BEGIN_SRC emacs-lisp 
   ; TODO: treesitter integration should be better :(
   (use-package python-ts-mode
+      :ensure nil
       :mode "\\.py\\'"
       :custom
       ;;(python-indent-offset 4)
@@ -918,9 +892,9 @@ $sudo apt-get install clangd-12
  
 * Rust
 #+begin_src emacs-lisp
-(use-package rust-mode
-  :init
-  (setq rust-mode-treesitter-derive t))
+;;(use-package rust-mode
+;;  :init
+;;  (setq rust-mode-treesitter-derive t))
 #+end_src
 
 * Matlab
@@ -944,6 +918,7 @@ $sudo apt-get install openscad
 * Tree-sitter
 #+begin_src emacs-lisp
   (use-package treesit
+    :ensure nil
     :init
     (setq treesit-language-source-alist
      '((bash . ("https://github.com/tree-sitter/tree-sitter-bash" "v0.23.3" nil nil nil))
