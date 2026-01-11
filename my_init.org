@@ -659,28 +659,21 @@ return to the last place on the save buffer
   (use-package org-superstar
     :hook (org-mode . org-superstar-mode))
 
-	;(use-package ox-reveal
-	; 	  :config
-	; 	  (require 'ox-reveal)
-	; 	  (setq org-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js")
-	; 	  (setq org-reveal-mathjax t))
+  	;(use-package ox-reveal
+  	; 	  :config
+  	; 	  (require 'ox-reveal)
+  	; 	  (setq org-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js")
+  	; 	  (setq org-reveal-mathjax t))
 
-  (use-package org-re-reveal)
-  
+  ;;(use-package org-re-reveal)
+
   (use-package htmlize)
-
-  (use-package org-gcal
-    :defer t
-    :config
-    (setq org-gcal-client-id (password-store-get "DevOps/gcal/client-id")
-	  org-gcal-client-secret (password-store-get "DevOps/gcal/client-secret")
-	  org-gcal-file-alist '(("or.dicker@gmail.com" .  "~/workspace/org/gcal.org"))))
 
   (use-package cdlatex
     :config (add-hook 'org-mode-hook 'turn-on-org-cdlatex))
 
 
-	;; org-babel
+  	;; org-babel
     (org-babel-do-load-languages
      'org-babel-load-languages
      '((latex       . t)
@@ -696,6 +689,11 @@ return to the last place on the save buffer
     (use-package org-inline-pdf
       :config
       (add-hook 'org-mode-hook #'org-inline-pdf-mode))
+
+  (use-package ox-pandoc
+    :config
+    (org-pandoc-options-for-latex-pdf '((pdf-engine . "xelatex")))
+   )
 #+END_SRC
 * Markdown
 #+begin_src emacs-lisp
