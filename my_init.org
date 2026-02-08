@@ -375,6 +375,7 @@ return to the last place on the save buffer
 #+end_src
 
 ** IBuffer
+M-x all-the-icons-install-fonts 
 #+BEGIN_SRC emacs-lisp
 (use-package ibuffer
   :ensure nil
@@ -396,6 +397,9 @@ return to the last place on the save buffer
      (mark " "
            (name 16 -1)
            " " filename))))
+
+(use-package all-the-icons-ibuffer
+  :hook (ibuffer-mode . all-the-icons-ibuffer-mode))
 #+END_SRC
 
 ** Load other files
@@ -857,7 +861,7 @@ sudo apt install auctex texlive-full
       :ensure nil
       :mode "\\.py\\'"
       :custom
-      ;;(python-indent-offset 4)
+      (python-indent-offset 4)
       (python-shell-interpreter "python3")
   )
 
@@ -981,3 +985,34 @@ $sudo apt-get install openscad
 #+end_src
 
 
+* Claude Code
+#+begin_src elisp
+    ;; monet
+    (use-package monet
+    :vc (:url "https://github.com/stevemolitor/monet" :rev :newest)
+    :config
+    (monet-ediff-split-window-direction 'vertical))
+
+  ;;  ;; install required inheritenv dependency:
+  ;;  (use-package inheritenv
+  ;;    :vc (:url "https://github.com/purcell/inheritenv" :rev :newest))
+  ;; 
+  ;;  ;; install claude-code.el
+  ;;  (use-package claude-code 
+  ;;    :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
+  ;;    :init
+  ;;    ;; use vterm
+  ;;    (setq claude-code-terminal-backend 'vterm)
+  ;;    :config
+  ;;    ;; optional IDE integration with Monet
+  ;;    (add-hook 'claude-code-process-environment-functions #'monet-start-server-function)
+  ;;    (monet-mode 1)
+  ;; 
+  ;;    (claude-code-mode)
+  ;;    :bind-keymap ("C-c c" . claude-code-command-map)
+  ;; 
+  ;;    ;; Optionally define a repeat map so that "M" will cycle thru Claude auto-accept/plan/confirm modes after invoking claude-code-cycle-mode / C-c M.
+  ;;    :bind
+  ;;    (:repeat-map my-claude-code-map ("M" . claude-code-cycle-mode)))
+
+#+end_src
