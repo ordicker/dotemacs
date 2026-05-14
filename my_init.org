@@ -756,8 +756,10 @@ M-x all-the-icons-install-fonts
 #+END_SRC
 * Expand-region
 #+BEGIN_SRC emacs-lisp 
-(use-package expand-region
-  :bind ("C-=" . er/expand-region))
+(use-package expreg
+  :ensure t
+  :bind (("C-=" . expreg-expand)
+         ("C--" . expreg-contract)))
 #+END_SRC
 * Parens
 #+BEGIN_SRC emacs-lisp
@@ -987,32 +989,13 @@ $sudo apt-get install openscad
 
 * Claude Code
 #+begin_src elisp
-    ;; monet
-    (use-package monet
+  ;; monet
+  (use-package monet
     :vc (:url "https://github.com/stevemolitor/monet" :rev :newest)
     :config
-    (monet-ediff-split-window-direction 'vertical))
-
-  ;;  ;; install required inheritenv dependency:
-  ;;  (use-package inheritenv
-  ;;    :vc (:url "https://github.com/purcell/inheritenv" :rev :newest))
-  ;; 
-  ;;  ;; install claude-code.el
-  ;;  (use-package claude-code 
-  ;;    :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
-  ;;    :init
-  ;;    ;; use vterm
-  ;;    (setq claude-code-terminal-backend 'vterm)
-  ;;    :config
-  ;;    ;; optional IDE integration with Monet
-  ;;    (add-hook 'claude-code-process-environment-functions #'monet-start-server-function)
-  ;;    (monet-mode 1)
-  ;; 
-  ;;    (claude-code-mode)
-  ;;    :bind-keymap ("C-c c" . claude-code-command-map)
-  ;; 
-  ;;    ;; Optionally define a repeat map so that "M" will cycle thru Claude auto-accept/plan/confirm modes after invoking claude-code-cycle-mode / C-c M.
-  ;;    :bind
-  ;;    (:repeat-map my-claude-code-map ("M" . claude-code-cycle-mode)))
-
+    (monet-mode 1)
+    :init
+    (setq monet-diff-tool #'monet-ediff-tool)
+    (setq monet-diff-cleanup-tool #'monet-ediff-cleanup-tool) 
+  )
 #+end_src
