@@ -348,7 +348,11 @@ Bootstrap use-package
 return to the last place on the save buffer 
 #+BEGIN_SRC emacs-lisp
 (use-package saveplace
-  :init (save-place-mode))
+  :init
+  (setq save-place-forget-unreadable-files nil)
+  (save-place-mode))
+
+(add-to-list 'recentf-exclude "^/[^/]*:")
 #+END_SRC
 ** Anzu
   search and replace with regexp
@@ -716,6 +720,8 @@ M-x all-the-icons-install-fonts
 * Projectile
 #+BEGIN_SRC emacs-lisp 
 (use-package projectile
+  :custom
+  (projectile-track-known-projects-automatically nil)
   :config
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
   (projectile-mode +1))
