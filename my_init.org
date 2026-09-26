@@ -381,29 +381,34 @@ return to the last place on the save buffer
 ** IBuffer
 M-x all-the-icons-install-fonts 
 #+BEGIN_SRC emacs-lisp
-(use-package ibuffer
-  :ensure nil
-  :bind ("C-x C-b" . ibuffer)
-  :init
+  (use-package ibuffer
+    :ensure nil
+    :bind ("C-x C-b" . ibuffer)
+    :custom
+    (ibuffer-formats
+     '((mark modified read-only locked " "
+             (name 35 35 :left :elide)
+             " "
+             (size 9 -1 :right)
+             " "
+             (mode 16 16 :left :elide)
+             " " filename-and-process)
+       (mark " "
+             (name 16 -1)
+             " " filename))))
+
   (use-package ibuffer-vc
     :commands (ibuffer-vc-set-filter-groups-by-vc-root)
-    :custom
-    (ibuffer-vc-skip-if-remote 'nil))
-  :custom
-  (ibuffer-formats
-   '((mark modified read-only locked " "
-           (name 35 35 :left :elide)
-           " "
-           (size 9 -1 :right)
-           " "
-           (mode 16 16 :left :elide)
-           " " filename-and-process)
-     (mark " "
-           (name 16 -1)
-           " " filename))))
+     :custom
+     (ibuffer-vc-skip-if-remote 'nil)
+     :after ibuffer
+     :hook (ibuffer-mode . (lambda ()
+                             (ibuffer-vc-set-filter-groups-by-vc-root)
+                             (unless (eq ibuffer-sorting-mode 'vc-status)
+                               (ibuffer-do-sort-by-vc-status)))))
 
-(use-package all-the-icons-ibuffer
-  :hook (ibuffer-mode . all-the-icons-ibuffer-mode))
+  (use-package all-the-icons-ibuffer
+    :hook (ibuffer-mode . all-the-icons-ibuffer-mode))
 #+END_SRC
 
 ** Load other files
@@ -433,8 +438,9 @@ M-x all-the-icons-install-fonts
 #+END_SRC
 ** Ediff
 #+BEGIN_SRC emacs-lisp
-;; prevent new window for ediff session 
-(setq ediff-window-setup-function 'ediff-setup-windows-plain)
+  (setq ediff-split-window-function 'split-window-horizontally)
+  ;; prevent new window for ediff session 
+  (setq ediff-window-setup-function 'ediff-setup-windows-plain)
 #+END_SRC
 ** Icons (nerd)
 #+BEGIN_SRC emacs-lisp
@@ -572,6 +578,8 @@ M-x all-the-icons-install-fonts
     :bind (:map corfu-map ("<tab>" . corfu-complete))
     :config
     (setq tab-always-indent 'complete)
+    (setq corfu-auto t)
+    (setq corfu-auto-delay 0.2)
     (setq corfu-preview-current nil)
     (setq corfu-min-width 20)
      
